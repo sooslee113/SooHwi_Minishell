@@ -6,13 +6,30 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:31:19 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/11 17:08:28 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:54:52 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	parsing_envp(char **envp, t_sh *sh_list)
+void	add_env_list(t_env *p_env, char *t_key, char *t_value)
+{
+	if (p_env != NULL)
+	{
+		while (p_env != NULL)
+			p_env = p_env->next;
+	}
+	p_env = malloc(sizeof(t_env));
+	if (p_env == NULL)
+		exit(1);
+	p_env->key = ft_strdup(t_key);
+	p_env->value = ft_strdup(t_value);
+	p_env->next = NULL;
+				printf("envp->key : %s\n", p_env->key);///
+	
+}
+
+void	parsing_envp(char **envp, t_sh *p_sh_list)
 {
 	int		i;
 	int		j;
@@ -20,7 +37,7 @@ int	parsing_envp(char **envp, t_sh *sh_list)
 	char	*t_value;
 
 	i = 0;
-	while (envp[i] != '\0')
+	while (envp[i] != NULL)
 	{
 		j = 0;
 		while (envp[i][j] != '\0')
@@ -32,22 +49,9 @@ int	parsing_envp(char **envp, t_sh *sh_list)
 			}
 			j++;
 		}
-		add_env_list(&(sh_list->envs), t_key, t_value);
+		add_env_list(&(p_sh_list->envs), t_key, t_value);
+				printf("p_sh_list->envs.key : %s\n", p_sh_list->envs.key);///
+		
 		i++;
 	}
-}
-
-void	add_env_list(t_env *env, char *t_key, char *t_value)
-{
-	if (env != NULL)
-	{
-		while (env != NULL)
-			env = env->next;
-	}
-	env = malloc(sizeof(t_env));
-	if (env == NULL)
-		
-	env->key = ft_strdup(t_key);
-	env->value = ft_strdup(t_value);
-	env->next = NULL;
 }
