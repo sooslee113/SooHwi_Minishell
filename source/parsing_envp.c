@@ -6,27 +6,35 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:31:19 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/13 20:21:53 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:46:43 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	add_env_list(t_env *p_env, char *t_key, char *t_value)
+
+
+void	add_env_list(t_env **p_env, char *t_key, char *t_value)
 {
-	if (p_env != NULL)
-	{
-		while (p_env != NULL)
-			p_env = p_env->next;
-	}
-	p_env = malloc(sizeof(t_env));
-	if (p_env == NULL)
+	t_env	*new_node;
+	t_env	*temp_head;
+
+	new_node = malloc(sizeof(t_env));
+	if (new_node == NULL)
 		exit(1);
-	p_env->key = ft_strdup(t_key);
-	p_env->value = ft_strdup(t_value);
-	p_env->next = NULL;
-				printf("envp->key : %s\n", p_env->key);///
-	
+	new_node->key = ft_strdup(t_key);
+	new_node->value = ft_strdup(t_value);
+	new_node->next = NULL;
+
+	if (*p_env == NULL)
+		*p_env = new_node;
+	else
+	{
+		temp_head = *p_env;
+		while (temp_head->next != NULL)
+			temp_head = temp_head->next;
+		temp_head->next = new_node;
+	}
 }
 
 void	parsing_envp(char **envp, t_sh *p_sh_list)
@@ -49,9 +57,7 @@ void	parsing_envp(char **envp, t_sh *p_sh_list)
 			}
 			j++;
 		}
-		add_env_list(&(p_sh_list->envs), t_key, t_value);
-				printf("p_sh_list->envs.key : %s\n", p_sh_list->envs.key);///
-		
+		add_env_list(&(p_sh_list->env_head), t_key, t_value);		
 		i++;
 	}
 }
