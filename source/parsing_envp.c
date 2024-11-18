@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:31:19 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/14 17:46:43 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:56:08 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	parsing_envp(char **envp, t_sh *p_sh_list)
 			}
 			j++;
 		}
-		add_env_list(&(p_sh_list->env_head), t_key, t_value);		
+		add_env_list(&(p_sh_list->env_head), t_key, t_value);
 		i++;
 	}
 }

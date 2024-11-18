@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/14 17:49:23 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:48:21 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,24 +30,24 @@ void	init_sh_list(t_sh *sh_list)
 
 int	main(int ac, char** av, char **envp)
 {
-	t_sh sh_list;
+	t_sh 	sh_list;
+	char	*command;
 
-	///
-	if (ac == 100000 && av == NULL)
-		av = NULL;
-	///
+	(void)ac;
+	(void)av;
 	init_sh_list(&sh_list);
 	parsing_envp(envp, &sh_list);
-
-	for (int m = 0; envp[m] != NULL; m++)
+	
+	while (1)
 	{
-		printf("%s=%s\n", sh_list.env_head->key, sh_list.env_head->value);
-		sh_list.env_head = sh_list.env_head->next;
+		command = readline("minishell$ ");
+		if (command != NULL)
+			printf("%s\n", command);
+		else
+			break ;
+		add_history(command);
+		free(command);
 	}
-	// while (1)
-	// {
-	//		
-	// }
 	printf("The End!\n");
 	return (0);
 }

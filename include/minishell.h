@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/14 17:43:22 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:16:49 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <termios.h>
 #include "../libft/libft.h"
 
 typedef struct s_env //환경변수 (단방향)연결리스트

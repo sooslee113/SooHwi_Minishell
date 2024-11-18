@@ -6,7 +6,7 @@
 #    By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/07 20:26:36 by donghwi2          #+#    #+#              #
-#    Updated: 2024/11/12 15:35:31 by donghwi2         ###   ########.fr        #
+#    Updated: 2024/11/15 15:10:38 by donghwi2         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ $(LIBFT):
 	@make -s -C $(LIBFT_DIR)
 
 $(NAME): $(LIBFT) $(OBJ)
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -L./$(LIBFT_DIR) -lft
+	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -L./$(LIBFT_DIR) -lft -lreadline
 
 $(OBJ): $(SRC)
 	@$(CC) $(CFLAGS) -c $? -I./$(LIBFT_DIR)
