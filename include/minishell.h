@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/18 22:40:14 by sooslee          ###   ########.fr       */
+/*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/11/18 23:02:44 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include <termios.h>
 #include "../libft/libft.h"
 
-typedef struct s_env //환경변수 (단방향)연결리스트
+typedef struct s_env //환경변수 -> 완벽하지 않은(VALUE값 없는) 변수 빼기
 {
 	char			*key;
 	char			*value;
@@ -40,10 +40,10 @@ typedef struct s_export //환경변수 -> 순서 오름차순
 
 typedef struct s_cmd //명령어
 {
-	char	*command;//"export" 저장
-	int		is_builtin;
-	int		is_heredoc;
-	char	**inja;
+	char	*command;//"export" 등 명령어 저장
+	int		is_builtin;//builtin 함수인지 확인
+	int		is_heredoc;//heredoc 있는지 확인
+	char	**arg;//명령어 뒤에 들어오는 인자 확인
 	//...
 }t_cmd;
 
@@ -66,9 +66,9 @@ void	parsing_envp(char **envp, t_sh *p_sh_list);
 
 //parsing_export.c
 void	add_export_list(t_export **p_export, char *t_key, char *t_value);
-void split_list(t_export *head, t_export **front, t_export **back);
-t_export *sorted_merge(t_export *a, t_export *b);
-void envp_sort(t_export **export_head);
+void	split_list(t_export *head, t_export **front, t_export **back);
+t_export	*sorted_merge(t_export *a, t_export *b);
+void	envp_sort(t_export **export_head);
 
 //sinal
 void	sig_handler(int sig);
