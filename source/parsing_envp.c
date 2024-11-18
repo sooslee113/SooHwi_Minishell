@@ -6,37 +6,16 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:31:19 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/15 15:56:08 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 22:26:15 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+// 초기 envp를 파싱하는 파일
+// env, export 구조체에 각각 내용을 똑같이 채워넣음
+// export 구조체는 정렬시키는 큰 함수 하나 포함됨
 
-
-
-void	add_env_list(t_env **p_env, char *t_key, char *t_value)
-{
-	t_env	*new_node;
-	t_env	*temp_head;
-
-	new_node = malloc(sizeof(t_env));
-	if (new_node == NULL)
-		exit(1);
-	new_node->key = ft_strdup(t_key);
-	new_node->value = ft_strdup(t_value);
-	new_node->next = NULL;
-
-	if (*p_env == NULL)
-		*p_env = new_node;
-	else
-	{
-		temp_head = *p_env;
-		while (temp_head->next != NULL)
-			temp_head = temp_head->next;
-		temp_head->next = new_node;
-	}
-}
-
+//기본 envp를 파싱하는 코드
 void	parsing_envp(char **envp, t_sh *p_sh_list)
 {
 	int		i;
@@ -57,7 +36,9 @@ void	parsing_envp(char **envp, t_sh *p_sh_list)
 			}
 			j++;
 		}
+		add_export_list(&(p_sh_list->export_head), t_key, t_value);
 		add_env_list(&(p_sh_list->env_head), t_key, t_value);
 		i++;
 	}
+	envp_sort(&(p_sh_list->export_head));
 }
