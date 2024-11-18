@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 23:00:33 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 23:27:48 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ int	main(int ac, char** av, char **envp)
 			break;
     	if(*input)
 			add_history(input);
+		tokenize_input(input, &sh_list);
     	free(input);
 	}
 	printf("The End!\n");
