@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 23:46:46 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/19 00:03:06 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void		sig_handle(t_sh *sh_list);
 int			ft_strcmp(const char *s1, const char *s2);
 
 //split_2.c
-char		**ft_split_2(char const *s, char c)
+char		**ft_split_2(char const *s, char c);
 
 
 #endif
