@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/15 15:16:49 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 18:03:57 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,20 @@ typedef struct s_env //환경변수 (단방향)연결리스트
 
 typedef struct s_sh //통합(mini"sh"ell)구조체
 {
-	t_env	*env_head;
+	t_env				*env_head;
+	//t_export			*export_head;//추후 env 및 export 방향성에 따라 추가 혹은 제거
+	struct sigaction	sa;
 }t_sh;
 
+//parsing_envp
 void	parsing_envp(char **envp, t_sh *p_sh_list);
 void	add_env_list(t_env **p_env, char *t_key, char *t_value);
 void	init_sh_list(t_sh *sh_list);
+
+//sinal
+void	sig_handler(int sig);
+void	sig_handle(t_sh *sh_list)
+
+
 
 #endif

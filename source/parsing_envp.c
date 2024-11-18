@@ -6,14 +6,14 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:31:19 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/15 15:56:08 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 17:33:59 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
 
-
+// 기본 환경변수를 갖는 list의 뒤에 노드(key 및 value와 함께)를 추가하는 코드
 void	add_env_list(t_env **p_env, char *t_key, char *t_value)
 {
 	t_env	*new_node;
@@ -37,6 +37,7 @@ void	add_env_list(t_env **p_env, char *t_key, char *t_value)
 	}
 }
 
+//기본 envp를 파싱하는 코드
 void	parsing_envp(char **envp, t_sh *p_sh_list)
 {
 	int		i;
