@@ -35,7 +35,6 @@ int main(int argc, char **argv)
         perror("sigaction");
         exit(EXIT_FAILURE);
   }
-
   while(1)
   {
     input = readline("minishell$");
