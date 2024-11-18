@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:58:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 17:58:43 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 23:03:51 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,10 @@ void	sig_handle(t_sh *sh_list)
 	sigemptyset(&(sh_list->sa.sa_mask));         // sa_mask를 빈 집합으로 초기화
 	sigaddset(&(sh_list->sa.sa_mask), SIGQUIT);  // SIGQUIT 시그널을 sa_mask에 추가
 	sh_list->sa.sa_flags = 0;
+	if (sigaction(SIGINT, &(sh_list->sa), NULL) == -1) 
+	{
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+	}
 }
+
