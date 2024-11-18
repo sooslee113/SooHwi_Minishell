@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+         #
+#    By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/07 20:26:36 by donghwi2          #+#    #+#              #
-#    Updated: 2024/11/15 15:10:38 by donghwi2         ###   ########.fr        #
+#    Updated: 2024/11/18 19:26:33 by sooslee          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 LIBFT_DIR = libft
 LIBFT = ./libft/libft.a
 RM = rm -rf
-SRCS = main.c parsing_envp.c
+SRCS = main.c parsing_envp.c signal.c
 SRC	= $(addprefix ./source/,$(SRCS))
 OBJ = $(SRC:.c=.o)
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 18:03:57 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 19:25:46 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	init_sh_list(t_sh *sh_list);
 
 //sinal
 void	sig_handler(int sig);
-void	sig_handle(t_sh *sh_list)
+void	sig_handle(t_sh *sh_list);
 
 
 
