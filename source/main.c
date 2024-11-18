@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 18:18:19 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/18 22:16:44 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,21 @@ int	main(int ac, char** av, char **envp)
         perror("sigaction");
         exit(EXIT_FAILURE);
 	}
+	t_export *current = sh_list.export_head;
+    while (current != NULL)
+    {
+        printf("%s=%s\n", current->key, current->value);
+        current = current->next;
+    }
+
 	while(1)
 	{
-    input = readline("minishell$");
-    if (!input) // citrl + d 는 인풋이 NULL이라는 뜻
-	break;
-    if(*input)
-	add_history(input);
-    free(input);
+    	input = readline("minishell$ ");
+    	if (!input) // citrl + d 는 인풋이 NULL이라는 뜻
+			break;
+    	if(*input)
+			add_history(input);
+    	free(input);
 	}
 	printf("The End!\n");
 	return (0);
