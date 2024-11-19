@@ -31,22 +31,23 @@ void	init_sh_list(t_sh *sh_list)
 int	main(int ac, char** av, char **envp)
 {
 	t_sh 	sh_list;
-	char	*command;
+	char	*input;
 
 	(void)ac;
 	(void)av;
 	init_sh_list(&sh_list);
 	parsing_envp(envp, &sh_list);
-	
-	while (1)
+	sig_handle(&sh_list);
+
+	while(1)
 	{
-		command = readline("minishell$ ");
-		if (command != NULL)
-			printf("%s\n", command);
-		else
-			break ;
-		add_history(command);
-		free(command);
+    	input = readline("minishell$ ");
+    	if (!input) // citrl + d 는 인풋이 NULL이라는 뜻
+			break;
+    	if(*input)
+			add_history(input);
+		tokenize_input(input, &sh_list);
+    	free(input);
 	}
 	printf("The End!\n");
 	return (0);
