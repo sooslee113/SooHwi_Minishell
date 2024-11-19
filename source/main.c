@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 23:27:48 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/19 10:10:53 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ int	main(int ac, char** av, char **envp)
 
 	while(1)
 	{
-    	input = readline("minishell$ ");
+		input = readline("minishell$ ");
     	if (!input) // citrl + d 는 인풋이 NULL이라는 뜻
 			break;
-    	if(*input)
+		if(*input)
 			add_history(input);
 		tokenize_input(input, &sh_list);
-    	free(input);
+		free(input);
 	}
 	printf("The End!\n");
 	return (0);
