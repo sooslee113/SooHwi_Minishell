@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 23:27:48 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/19 00:53:14 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-// sh_list는 통합 관리 리스트(shell list).
-// 아래 코드는 sh_list를 0으로 초기화하는 코드.
 void	init_sh_list(t_sh *sh_list)
 {
 	int		i;
@@ -30,14 +28,10 @@ void	init_sh_list(t_sh *sh_list)
 	}
 }
 
-// readline을 사용하여 명령어를 받는 예시 코드를 추가함.
-// 실행을 해 보면 readline뒤의 문자가 출력되며, 입력받는 값을 리턴할 준비를 함.
-// 즉, readline이 실행된 후 터미널에서 받는 명령어가 command포인터를 통해 반환됨.
-// command포인터를 통해 반환된 명령어를 이제부터 파싱하면 될듯.
 int	main(int ac, char** av, char **envp)
 {
 	t_sh 	sh_list;
-	char *input;
+	char	*input;
 
 	(void)ac;
 	(void)av;
