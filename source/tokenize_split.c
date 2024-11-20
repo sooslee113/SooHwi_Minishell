@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 11:24:16 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 18:55:32 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/20 16:41:59 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,17 @@ void	init_tokenizer(t_tokenizer *tok)
 
 void	split_if_else_part(t_tokenizer *tok)
 {
-	if (tok->one_qut || tok->two_qut)
+	if (tok->one_qut != 0 || tok->two_qut != 0)
 	{
 		if ((tok->c == '\'' && tok->one_qut) || (tok->c == '"' && tok->two_qut))
-			tok->one_qut = tok->two_qut = 0;
+		{
+			tok->one_qut = 0;
+			tok->two_qut = 0;
+		}
 		else
 			tok->curr_tok[tok->char_i++] = tok->c;
 	}
-	else if (isspace(tok->c))
+	else if (ft_isspace(tok->c) != 0)
 		add_token(tok);
 	else if (tok->c == '\'' || tok->c == '"')
 	{
@@ -99,20 +102,4 @@ void free_tokens(char** toks, int tok_count)
 		i++;
 	}
 	free(toks);
-}
-// 테스트 함수
-int main()
-{
-	char* command = "echo 'hello world' \"what the | fuck\" > file.txt";
-	int tok_count = 0;
-	char** toks = split_like_shell(command, &tok_count);
-	printf("토큰들:\n");
-	int i = 0;
-	while (i < tok_count)
-	{
-		printf("토큰 %d: %s\n", i, toks[i]);
-		i++;
-	}
-	free_tokens(toks, tok_count);
-	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 18:56:10 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/20 16:59:44 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include <termios.h>
 #include "../libft/libft.h"
 
-typedef struct s_tokenizer
+typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 {
 	char	**toks;
 	char	curr_tok[1024];
@@ -92,6 +92,7 @@ void		tokenize_input(char *input, t_sh *sh_list);
 
 //tokenize_split.c
 char**		tokenize_split(char* input, int* token_count);
+void free_tokens(char** toks, int tok_count);
 
 //util.c
 int			ft_strcmp(const char *s1, const char *s2);
