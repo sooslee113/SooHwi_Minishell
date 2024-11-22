@@ -5,13 +5,10 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-<<<<<<< HEAD
 /*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
 /*   Updated: 2024/11/22 02:22:36 by sooslee          ###   ########.fr       */
-=======
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 00:03:06 by donghwi2         ###   ########.fr       */
->>>>>>> e2920b40df98e37db1950de6b5aff9bf42d252c7
+/*   Updated: 2024/11/20 16:59:44 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +25,17 @@
 #include <readline/history.h>
 #include <termios.h>
 #include "../libft/libft.h"
+
+typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
+{
+	char	**toks;
+	char	curr_tok[1024];
+	int		tok_i;
+	int		char_i;
+	int		one_qut;//single_quote
+	int		two_qut;//double_quote
+	char	c;
+}t_tokenizer;
 
 typedef struct s_env //환경변수 -> 완벽하지 않은(VALUE값 없는) 변수 빼기
 {
@@ -77,7 +85,7 @@ void		split_list(t_export *head, t_export **front, t_export **back);
 t_export	*sorted_merge(t_export *a, t_export *b);
 void		envp_sort(t_export **export_head);
 
-<<<<<<< HEAD
+
 
 //sinal
 void	sig_handler(int sig);
@@ -86,13 +94,16 @@ void	sig_handle(t_sh *sh_list);
 //sinal.c
 void		sig_handler(int sig);
 void		sig_handle(t_sh *sh_list);
->>>>>>> e2920b40df98e37db1950de6b5aff9bf42d252c7
+>
+//tokenize_input.c
+void		tokenize_input(char *input, t_sh *sh_list);
+
+//tokenize_split.c
+char**		tokenize_split(char* input, int* token_count);
+void free_tokens(char** toks, int tok_count);
 
 //util.c
 int			ft_strcmp(const char *s1, const char *s2);
-
-//split_2.c
-char		**ft_split_2(char const *s, char c);
-
+int			ft_isspace(int c);
 
 #endif

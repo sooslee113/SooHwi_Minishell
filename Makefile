@@ -6,40 +6,41 @@
 #    By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/07 20:26:36 by donghwi2          #+#    #+#              #
-#    Updated: 2024/11/18 22:28:58 by donghwi2         ###   ########.fr        #
+#    Updated: 2024/11/20 16:21:47 by donghwi2         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = minishell
-CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
-LIBFT_DIR = libft
-LIBFT = ./libft/libft.a
-RM = rm -rf
-SRCS = main.c parsing_env.c parsing_envp.c parsing_export.c signal.c util.c
-SRC	= $(addprefix ./source/,$(SRCS))
-OBJ = $(SRC:.c=.o)
+NAME		=	minishell
+CC			=	cc
+CFLAGS		=	-Wall -Wextra -Werror -g
+LIBFT_DIR	=	libft
+LIBFT		=	./libft/libft.a
+RM			=	rm -rf
+SRCS		=	main.c parsing_env.c parsing_envp.c parsing_export.c signal.c\
+				tokenize_input.c tokenize_split.c util.c 
+SRC			=	$(addprefix ./source/,$(SRCS))
+OBJ			=	$(SRC:.c=.o)
 
-all: $(LIBFT) $(NAME)
+all			:	$(LIBFT) $(NAME)
 
-$(LIBFT):
+$(LIBFT)	:
 	@make -s -C $(LIBFT_DIR)
 
-$(NAME): $(LIBFT) $(OBJ)
+$(NAME)		:	$(LIBFT) $(OBJ)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -L./$(LIBFT_DIR) -lft -lreadline
 
-$(OBJ): $(SRC)
+$(OBJ)		:	$(SRC)
 	@$(CC) $(CFLAGS) -c $? -I./$(LIBFT_DIR)
 	@mv *.o source
 
-clean:
+clean		:
 	@$(RM) source/*.o
 	@make -s -C $(LIBFT_DIR) clean
 
-fclean:	clean
+fclean		:	clean
 	@$(RM) $(NAME)
 	@make -s -C $(LIBFT_DIR) fclean
 
-re:	fclean all
+re			:	fclean all
 
-.PHONY: all clean fclean re
+.PHONY		:	all clean fclean re
