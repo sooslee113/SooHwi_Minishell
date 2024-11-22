@@ -5,6 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
+/*   Updated: 2024/11/22 02:22:36 by sooslee          ###   ########.fr       */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
 /*   Updated: 2024/11/20 16:59:44 by donghwi2         ###   ########.fr       */
 /*                                                                            */
@@ -83,10 +85,16 @@ void		split_list(t_export *head, t_export **front, t_export **back);
 t_export	*sorted_merge(t_export *a, t_export *b);
 void		envp_sort(t_export **export_head);
 
+
+
+//sinal
+void	sig_handler(int sig);
+void	sig_handle(t_sh *sh_list);
+=======
 //sinal.c
 void		sig_handler(int sig);
 void		sig_handle(t_sh *sh_list);
-
+>
 //tokenize_input.c
 void		tokenize_input(char *input, t_sh *sh_list);
 
