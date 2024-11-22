@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   minishelltemp.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/22 02:22:36 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/22 11:05:20 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef MINISHELLTEMP_H
+# define MINISHELLTEMP_H
 
 #include <unistd.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <termios.h>
-#include "../libft/libft.h"
+#include "./libft/libft.h"
 
 typedef struct s_env //환경변수 (단방향)연결리스트
 {
@@ -69,7 +69,8 @@ void	add_export_list(t_export **p_export, char *t_key, char *t_value);
 void split_list(t_export *head, t_export **front, t_export **back);
 t_export *sorted_merge(t_export *a, t_export *b);
 void envp_sort(t_export **export_head);
-
+void	insert_envp(char **argv, t_sh *p_sh_list);
+void print_export_list2(t_export *export_head);
 
 //sinal
 void	sig_handler(int sig);
@@ -77,6 +78,8 @@ void	sig_handle(t_sh *sh_list);
 
 //util
 int	ft_strcmp(const char *s1, const char *s2);
+void	print_export_list(t_export *export_head);
+void	print_env_list(t_env *env_head);
 
 
 #endif
