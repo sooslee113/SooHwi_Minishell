@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
 /*   Updated: 2024/11/25 03:19:21 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -97,6 +98,8 @@ void		add_export_list(t_export **p_export, char *t_key, char *t_value);
 void		split_list(t_export *head, t_export **front, t_export **back);
 t_export	*sorted_merge(t_export *a, t_export *b);
 void		envp_sort(t_export **export_head);
+
+
 
 //sinal.c
 void		sig_handler(int sig);

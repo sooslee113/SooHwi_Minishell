@@ -46,40 +46,68 @@ void	print_export_list(t_export *export_head)
 		temp = temp->next;
 	}
 }
-void	divde_key_value(char **argv, t_export *export_head)
-{
 
-}
-void	export_edgecase(char **argv)
+void	new_key_value_parsing(char *str, char **t_key, char **t_value)
 {
 	int i;
-	int j;
-	char **temp;
-	
-	i = 1;
-	while(argv[i])
+
+	i = 0;
+	while(str[i])
 	{
-		if (argv[i][0] != '_' || (ft_isalpha(argv[i][0]) == 0))
-			return (1);
-		i ++;
-	}
-	i = 1;
-	while(argv[i])
-	{
-		j = 0;
-		while(argv[i][j])
+		if(str[i] == '=')
 		{
-			if (ft_isalnum(argv[i][j]) == 0 || argv[i][j] != '_')
-				return (1);
-			j ++;
+			*t_key = ft_substr(str, 0 , i);
+			*t_value = ft_substr(str, i + 1, ft_strlen(str) -i -1);
+			return ;
 		}
 		i ++;
 	}
+	*t_key = str;
+	*t_value = NULL;
 }
-void	insert_envp(char ** argv, t_export *export_head)
+
+int	export_edgecase(char *key)
 {
-	divde_key_value(argv);
-	export_edgecase(argv);
+	int i;
+
+	if (!key)
+		return (0);
+	if (key[0] != '_' && (ft_isalpha(key[0]) == 0))
+		return (0);
+	i = 1;
+	while(key[i])
+	{
+		if (ft_isalnum(key[i]) == 0 || key[i] != '_')
+			return (0);
+		i ++;
+	}
+	return (1);
+}
+void	divde_key_value(char **argv, t_sh *p_sh_list)
+{
+	int i;
+	char *t_key;
+	char *t_value;
+
+	i = 1;
+	while(argv[i])
+	{
+		new_key_value_parsing(argv[i], &t_key, &t_value);
+		if (export_edgecase(t_key) == 0)
+		{
+			printf("invaild KEY\n");
+				return ; //예외 처리
+		}
+		add_export_list(&(p_sh_list->export_head), t_key, t_value);
+		envp_sort(&(p_sh_list->export_head));
+		i ++;
+	}
+}
+
+
+void	insert_envp(char **argv, t_sh *p_sh_list)
+{
+	divde_key_value(argv, p_sh_list);
 }
 
 int main(int argc, char **argv, char **envp)
@@ -96,7 +124,8 @@ int main(int argc, char **argv, char **envp)
 	}
 	else if (argc > 1)
 	{
-		insert_envp((char **)argv, sh_list.export_head);
+		insert_envp((char **)argv, &(sh_list));
+		print_export_list(sh_list.export_head);
 	}
     return (0);
 }
