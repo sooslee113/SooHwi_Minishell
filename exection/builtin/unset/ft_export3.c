@@ -35,6 +35,8 @@ void list_copy(t_export **sorted_list, t_export *temp)
         temp = temp->next;
     }
 }
+
+
 void print_export_list2(t_export *export_head)
 {
 

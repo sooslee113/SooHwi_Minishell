@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/22 11:05:20 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/24 17:35:53 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,7 @@ int	ft_strcmp(const char *s1, const char *s2);
 void	print_export_list(t_export *export_head);
 void	print_env_list(t_env *env_head);
 
+//
+void    ft_pwd();
 
 #endif

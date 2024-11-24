@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/22 11:08:16 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/24 15:38:31 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ void	print_export_list(t_export *export_head)
 
 	while (temp != NULL)
 	{
-		printf("%s=%s\n", temp->key, temp->value);
+		if (temp->value != NULL)
+			printf("%s=%s\n", temp->key, temp->value);
 		temp = temp->next;
 	}
 }

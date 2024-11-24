@@ -3,14 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/22 02:22:36 by sooslee          ###   ########.fr       */
-/*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/23 21:40:51 by donghwi2         ###   ########.fr       */
+/*   Created: 2024/11/24 17:43:02 by sooslee           #+#    #+#             */
+/*   Updated: 2024/11/24 17:49:11 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -91,14 +90,10 @@ void		envp_sort(t_export **export_head);
 
 
 
-//sinal
-void	sig_handler(int sig);
-void	sig_handle(t_sh *sh_list);
-=======
 //sinal.c
 void		sig_handler(int sig);
 void		sig_handle(t_sh *sh_list);
->
+
 //tokenize_input.c
 int			check_quote_num(char *input);
 void		tokenize_input(char *input, t_sh *sh_list);
