@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 22:40:07 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/24 17:37:43 by sooslee          ###   ########.fr       */
+/*   Created: 2024/11/24 17:43:02 by sooslee           #+#    #+#             */
+/*   Updated: 2024/11/24 17:49:11 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -23,6 +24,17 @@
 #include <readline/history.h>
 #include <termios.h>
 #include "../libft/libft.h"
+
+typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
+{
+	char	**toks;
+	char	curr_tok[1024];
+	int		tok_i;
+	int		char_i;
+	int		one_qut;//single_quote
+	int		two_qut;//double_quote
+	char	c;
+}t_tokenizer;
 
 typedef struct s_env //환경변수 -> 완벽하지 않은(VALUE값 없는) 변수 빼기
 {
@@ -73,15 +85,20 @@ t_export	*sorted_merge(t_export *a, t_export *b);
 void		envp_sort(t_export **export_head);
 
 
+
 //sinal.c
 void		sig_handler(int sig);
 void		sig_handle(t_sh *sh_list);
 
+//tokenize_input.c
+void		tokenize_input(char *input, t_sh *sh_list);
+
+//tokenize_split.c
+char**		tokenize_split(char* input, int* token_count);
+void free_tokens(char** toks, int tok_count);
+
 //util.c
 int			ft_strcmp(const char *s1, const char *s2);
-
-//split_2.c
-char		**ft_split_2(char const *s, char c);
-
+int			ft_isspace(int c);
 
 #endif

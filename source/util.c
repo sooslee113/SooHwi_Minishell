@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 01:08:21 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/19 11:02:39 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,25 +32,11 @@ int	ft_strcmp(const char *s1, const char *s2)
 	}
 	return (0);
 }
-// export_head로 환경변수 출력하기
-void	print_export_list(t_export *export_head)
-{
-	t_export *temp = export_head;
 
-	while (temp != NULL)
-	{
-		printf("%s=%s\n", temp->key, temp->value);
-		temp = temp->next;
-	}
-}
-//env 함수 출력하기
-void	print_env_list(t_env *env_head)
+int	ft_isspace(int c)
 {
-	t_env *temp = env_head;
-
-	while (temp != NULL)
-	{
-		printf("%s=%s\n", temp->key, temp->value);
-		temp = temp->next;
-	}
+	if (c == ' ' || c == '\t' || c == '\v' || c =='\n')
+		return (1);
+	else
+		return (0);
 }
