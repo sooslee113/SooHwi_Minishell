@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 11:24:16 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/23 21:43:41 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/24 18:44:06 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	init_tokenizer(t_tokenizer *tok)
 	int	i;
 
 	i = 0;
-	tok->toks = malloc(sizeof(char *) * 128);//할당
+	tok->toks = malloc(sizeof(char *) * 256);//할당
 	if (tok->toks == NULL)
 		exit(1);
 	while (tok->curr_tok[i] != 0)
@@ -54,12 +54,15 @@ void	init_tokenizer(t_tokenizer *tok)
 	tok->two_qut = 0;
 	tok->c = 0;
 	tok->next_c = 0;
+	tok->pipe_cnt = 0;
 }
 
 void	take_pipe_and_anglebracket(t_tokenizer *tok, int *i)
 {
 	add_token(tok);
 	tok->curr_tok[0] = tok->c;
+	if (tok->c == '|')
+		tok->pipe_cnt++;
 	if ((tok->c == '>' && tok->next_c == '>')\
 		|| (tok->c == '<' && tok->next_c == '<'))
 	{
@@ -100,7 +103,7 @@ void	split_if_else_part(t_tokenizer *tok, int *i)
 }
 
 // 문자열을 공백, 따옴표, 특수 문자로 나누는 함수
-char** tokenize_split(char* input, int* token_count)
+char** tokenize_split(char* input, int* token_count, int *pipe_cnt)
 {
 	int			i;
 	t_tokenizer	tok;
@@ -117,5 +120,7 @@ char** tokenize_split(char* input, int* token_count)
 	add_token(&tok);
 	tok.toks[tok.tok_i] = NULL;
 	*token_count = tok.tok_i;
+	*pipe_cnt = tok.pipe_cnt;
+
 	return (tok.toks);
 }

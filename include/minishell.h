@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/24 17:43:02 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/24 17:49:11 by sooslee          ###   ########.fr       */
+/*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/11/25 03:19:21 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,33 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <string.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <termios.h>
-#include "../libft/libft.h"
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <signal.h>
+# include <fcntl.h>
+# include <string.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <termios.h>
+# include "../libft/libft.h"
+
+typedef enum s_type
+{
+	N_WORD,
+	N_PIPE,
+	N_RED_OUT,
+	N_RED_OUT_APPEND,
+	N_RED_IN,
+	N_RED_HEREDOC,
+}t_type;
+
+typedef struct s_cmd
+{
+	char			*content;
+	t_type			type;
+	struct s_cmd	*next;
+}t_cmd;
 
 typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 {
@@ -33,42 +50,36 @@ typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 	int		char_i;//현재 처리중인 토큰(curr_tok)내부에서 문자위치 추적
 	int		one_qut;//single_quote
 	int		two_qut;//double_quote
+	int		pipe_cnt;//파이프 갯수 세기
 	char	c;
 	char	next_c;
 }t_tokenizer;
-
-typedef struct s_env //환경변수 -> 완벽하지 않은(VALUE값 없는) 변수 빼기
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}t_env;
 
 typedef struct s_export //환경변수 -> 순서 오름차순
 {
 	char			*key;
 	char			*value;
 	struct s_export	*next;
-}t_export;
-
-typedef struct s_cmd //명령어
-{
-	char			*command;//"export" 등 명령어 저장
-	char			**args;//명령어 뒤에 들어오는 인자 확인
-	int				is_builtin;//builtin 함수인지 확인
-	int				input_redir;// <
-	int				output_redir;// > >>
-	//...
-	struct s_cmd	*next;//pipe로 인한 다음 명령단 구조체
-}t_cmd;
+}t_export, t_env;
 
 typedef struct s_sh //통합(mini"sh"ell)구조체
 {
 	t_env				*env_head;
 	t_export			*export_head;//추후 env 및 export 방향성에 따라 추가 혹은 제거
 	struct sigaction	sa;
-	t_cmd				cmd;
+	int					pipe_cnt;
 }t_sh;
+
+// typedef struct s_cmd //명령어
+// {
+// 	char			command[128];//"export" 등 명령어 저장
+// 	char			args[128][1024];//명령어 뒤에 들어오는 인자 확인
+// 	int				is_builtin;//builtin 함수인지 확인
+// 	int				input_redir;// <
+// 	int				output_redir;// > >>
+// 	//...
+// 	struct s_cmd	*next;//pipe로 인한 다음 명령단 구조체
+// }t_cmd;
 
 //error.c
 void		print_error_and_exit(char *err_msg);
@@ -96,14 +107,16 @@ void		sig_handle(t_sh *sh_list);
 
 //tokenize_input.c
 int			check_quote_num(char *input);
-void		tokenize_input(char *input, t_sh *sh_list);
+t_cmd		*tokenize_input(char *input, t_sh *sh_list);
 
 //tokenize_split.c
-char**		tokenize_split(char* input, int* token_count);
+char** 		tokenize_split(char* input, int* token_count, int *pipe_cnt);
 void		free_tokens(char** toks, int tok_count);
 
 //util.c
 int			ft_strcmp(const char *s1, const char *s2);
 int			ft_isspace(int c);
+void		ft_lstadd_back_2(t_cmd *lst, t_cmd *new);
+
 
 #endif

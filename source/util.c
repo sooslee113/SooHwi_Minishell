@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 11:02:39 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/24 20:39:49 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,3 +40,33 @@ int	ft_isspace(int c)
 	else
 		return (0);
 }
+
+void	ft_lstadd_back_2(t_cmd *lst, t_cmd *new)
+{
+	t_cmd	*ptr;
+
+	if (lst == NULL || new == NULL)
+		return ;
+	if (lst == NULL)
+	{
+		lst = new;
+		return ;
+	}
+	ptr = lst;
+	while (ptr->next != NULL)
+		ptr = ptr->next;
+	ptr->next = new;
+}
+
+// void	init_cmd_node()
+// {	
+// 	ft_bzero(sh_list->cmd.command, 128);
+// 	while (i < 128)
+// 	{
+// 		ft_bzero(sh_list->cmd.args[i], 1024);
+// 		i++;
+// 	}
+// 	sh_list->cmd.is_builtin = 0;
+// 	sh_list->cmd.input_redir = 0;
+// 	sh_list->cmd.output_redir = 0;
+// }
