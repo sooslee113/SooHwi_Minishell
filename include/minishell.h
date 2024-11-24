@@ -6,23 +6,23 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/25 03:09:07 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 03:19:21 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <string.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <termios.h>
-#include "../libft/libft.h"
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <signal.h>
+# include <fcntl.h>
+# include <string.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <termios.h>
+# include "../libft/libft.h"
 
 typedef enum s_type
 {
