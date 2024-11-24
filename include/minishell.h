@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/23 21:40:51 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/24 18:43:14 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,22 @@
 #include <termios.h>
 #include "../libft/libft.h"
 
+typedef struct s_temp_1
+{
+	char	**tt;//temp_toks
+	struct s_cmd	*curr_cmd;
+	int		i;
+}t_temp_1;
+
 typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 {
 	char	**toks;
-	char	curr_tok[1024];
+	char	curr_tok[2048];
 	int		tok_i;//생성된 토큰인덱스 추적; toks에서 현재까지 저장된 토큰갯수 나타냄
 	int		char_i;//현재 처리중인 토큰(curr_tok)내부에서 문자위치 추적
 	int		one_qut;//single_quote
 	int		two_qut;//double_quote
+	int		pipe_cnt;//파이프 갯수 세기
 	char	c;
 	char	next_c;
 }t_tokenizer;
@@ -66,7 +74,8 @@ typedef struct s_sh //통합(mini"sh"ell)구조체
 	t_env				*env_head;
 	t_export			*export_head;//추후 env 및 export 방향성에 따라 추가 혹은 제거
 	struct sigaction	sa;
-	t_cmd				cmd;
+	t_cmd				*cmd;
+	int					pipe_cnt;
 }t_sh;
 
 //error.c
@@ -96,11 +105,13 @@ int			check_quote_num(char *input);
 void		tokenize_input(char *input, t_sh *sh_list);
 
 //tokenize_split.c
-char**		tokenize_split(char* input, int* token_count);
+char** 		tokenize_split(char* input, int* token_count, int *pipe_cnt);
 void		free_tokens(char** toks, int tok_count);
 
 //util.c
 int			ft_strcmp(const char *s1, const char *s2);
 int			ft_isspace(int c);
+void		ft_lstadd_back_2(t_cmd *lst, t_cmd *new);
+
 
 #endif

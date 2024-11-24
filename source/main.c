@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 10:10:53 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/24 16:56:38 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,13 @@
 
 void	init_sh_list(t_sh *sh_list)
 {
-	int		i;
-	int		n;
-	void	*null_sh_list;
-
-	n = sizeof(t_sh);
-	i = 0;
-	null_sh_list = (void *)sh_list;
-	while (i < n)
-	{
-		((unsigned char *)null_sh_list)[i] = '\0';
-		i++;
-	}
+	sh_list->cmd = NULL;
+	sh_list->env_head = NULL;
+	sh_list->export_head = NULL;
+	sh_list->pipe_cnt = 0;
+	// 필요한 멤버 추가 초기화
 }
+
 
 int	main(int ac, char** av, char **envp)
 {
@@ -42,7 +36,7 @@ int	main(int ac, char** av, char **envp)
 	while(1)
 	{
 		input = readline("minishell$ ");
-    	if (!input) // citrl + d 는 인풋이 NULL이라는 뜻
+		if (!input) // citrl + d 는 인풋이 NULL이라는 뜻
 			break;
 		if(*input)
 			add_history(input);
