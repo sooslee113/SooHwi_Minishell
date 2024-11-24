@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/24 18:43:14 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 03:09:07 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,27 @@
 #include <termios.h>
 #include "../libft/libft.h"
 
-typedef struct s_temp_1
+typedef enum s_type
 {
-	char	**tt;//temp_toks
-	struct s_cmd	*curr_cmd;
-	int		i;
-}t_temp_1;
+	N_WORD,
+	N_PIPE,
+	N_RED_OUT,
+	N_RED_OUT_APPEND,
+	N_RED_IN,
+	N_RED_HEREDOC,
+}t_type;
+
+typedef struct s_cmd
+{
+	char			*content;
+	t_type			type;
+	struct s_cmd	*next;
+}t_cmd;
 
 typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 {
 	char	**toks;
-	char	curr_tok[2048];
+	char	curr_tok[1024];
 	int		tok_i;//생성된 토큰인덱스 추적; toks에서 현재까지 저장된 토큰갯수 나타냄
 	int		char_i;//현재 처리중인 토큰(curr_tok)내부에서 문자위치 추적
 	int		one_qut;//single_quote
@@ -44,39 +54,31 @@ typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 	char	next_c;
 }t_tokenizer;
 
-typedef struct s_env //환경변수 -> 완벽하지 않은(VALUE값 없는) 변수 빼기
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}t_env;
-
 typedef struct s_export //환경변수 -> 순서 오름차순
 {
 	char			*key;
 	char			*value;
 	struct s_export	*next;
-}t_export;
-
-typedef struct s_cmd //명령어
-{
-	char			*command;//"export" 등 명령어 저장
-	char			**args;//명령어 뒤에 들어오는 인자 확인
-	int				is_builtin;//builtin 함수인지 확인
-	int				input_redir;// <
-	int				output_redir;// > >>
-	//...
-	struct s_cmd	*next;//pipe로 인한 다음 명령단 구조체
-}t_cmd;
+}t_export, t_env;
 
 typedef struct s_sh //통합(mini"sh"ell)구조체
 {
 	t_env				*env_head;
 	t_export			*export_head;//추후 env 및 export 방향성에 따라 추가 혹은 제거
 	struct sigaction	sa;
-	t_cmd				*cmd;
 	int					pipe_cnt;
 }t_sh;
+
+// typedef struct s_cmd //명령어
+// {
+// 	char			command[128];//"export" 등 명령어 저장
+// 	char			args[128][1024];//명령어 뒤에 들어오는 인자 확인
+// 	int				is_builtin;//builtin 함수인지 확인
+// 	int				input_redir;// <
+// 	int				output_redir;// > >>
+// 	//...
+// 	struct s_cmd	*next;//pipe로 인한 다음 명령단 구조체
+// }t_cmd;
 
 //error.c
 void		print_error_and_exit(char *err_msg);
@@ -102,7 +104,7 @@ void		sig_handle(t_sh *sh_list);
 
 //tokenize_input.c
 int			check_quote_num(char *input);
-void		tokenize_input(char *input, t_sh *sh_list);
+t_cmd		*tokenize_input(char *input, t_sh *sh_list);
 
 //tokenize_split.c
 char** 		tokenize_split(char* input, int* token_count, int *pipe_cnt);

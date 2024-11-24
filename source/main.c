@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/24 16:56:38 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 02:35:18 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	init_sh_list(t_sh *sh_list)
 {
-	sh_list->cmd = NULL;
 	sh_list->env_head = NULL;
 	sh_list->export_head = NULL;
 	sh_list->pipe_cnt = 0;
+
 	// 필요한 멤버 추가 초기화
 }
 
@@ -25,6 +25,7 @@ void	init_sh_list(t_sh *sh_list)
 int	main(int ac, char** av, char **envp)
 {
 	t_sh 	sh_list;
+	t_cmd	*head_cmd;
 	char	*input;
 
 	(void)ac;
@@ -40,7 +41,8 @@ int	main(int ac, char** av, char **envp)
 			break;
 		if(*input)
 			add_history(input);
-		tokenize_input(input, &sh_list);
+		head_cmd = tokenize_input(input, &sh_list);
+		(void)head_cmd;////////
 		free(input);
 	}
 	printf("The End!\n");
