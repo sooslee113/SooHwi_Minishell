@@ -8,6 +8,7 @@ SUBDIR = libft
 
 SRCS_MUST = ft_unset.c \
 		ft_export2.c \
+		ft_pwd.c \
 		ft_export3.c \
 	    parsing_envp.c \
 		parsing_export.c \
