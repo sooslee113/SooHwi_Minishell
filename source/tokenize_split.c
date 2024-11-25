@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 11:24:16 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/24 18:44:06 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:50:26 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,10 @@ void	take_pipe_and_anglebracket(t_tokenizer *tok, int *i)
 	if (tok->c == '|')
 		tok->pipe_cnt++;
 	if ((tok->c == '>' && tok->next_c == '>')\
-		|| (tok->c == '<' && tok->next_c == '<'))
+		|| (tok->c == '<' && tok->next_c == '<')\
+		|| (tok->c == '|' && tok->next_c == '|')\
+		|| (tok->c == '<' && tok->next_c == '>')\
+		|| (tok->c == ';' && tok->next_c == ';'))//11/25 15:00_이거 추가
 	{
 		tok->curr_tok[1] = tok->next_c;
 		tok->curr_tok[2] = '\0';
@@ -96,7 +99,7 @@ void	split_if_else_part(t_tokenizer *tok, int *i)
 		else
 			tok->two_qut = 1;
 	}
-	else if (ft_strchr("|<>", tok->c))//파이프 및 꺽쇠는 따로 처리
+	else if (ft_strchr("|<>;", tok->c))//파이프 및 꺽쇠는 따로 처리
 		take_pipe_and_anglebracket(tok, i);
 	else
 		tok->curr_tok[tok->char_i++] = tok->c;

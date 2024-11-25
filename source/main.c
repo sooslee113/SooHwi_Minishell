@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/25 02:35:18 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:34:52 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,13 @@ int	main(int ac, char** av, char **envp)
 			break;
 		if(*input)
 			add_history(input);
-		head_cmd = tokenize_input(input, &sh_list);
-		(void)head_cmd;////////
+		head_cmd = tokenize_input(input, &sh_list);//head_cmd에는 모든 명령어 각각이 t_cmd형태로 토크나이징 및 타입이 지정되어 있음.
+		//execute(&sh_list, head_cmd, envp);
+		
+		t_cmd *curr_cmd = head_cmd;
+		for (;curr_cmd != NULL; curr_cmd = curr_cmd->next)////////////////
+			printf("cmd : %s / type : %d\n", curr_cmd->content, curr_cmd->type);//////////////////
+		
 		free(input);
 	}
 	printf("The End!\n");

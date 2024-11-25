@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/25 03:19:21 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:44:54 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,13 @@ typedef enum s_type
 {
 	N_WORD,
 	N_PIPE,
+	N_PIPES,
 	N_RED_OUT,
 	N_RED_OUT_APPEND,
 	N_RED_IN,
 	N_RED_HEREDOC,
+	N_SEMICOL,
+	N_SEMICOLS,
 }t_type;
 
 typedef struct s_cmd
@@ -82,6 +85,9 @@ typedef struct s_sh //통합(mini"sh"ell)구조체
 
 //error.c
 void		print_error_and_exit(char *err_msg);
+
+//execute.c
+void		execute(t_sh *sh_list, t_cmd *head_cmd, char **envp);
 
 //main.c
 void		init_sh_list(t_sh *sh_list);

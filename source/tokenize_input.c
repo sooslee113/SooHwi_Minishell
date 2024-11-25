@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 23:24:04 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/25 03:19:03 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:55:22 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,9 @@ t_type set_type(char *token)
 {
 	if (ft_strcmp(token, "|") == 0)
 		return N_PIPE;
-	else if (ft_strcmp(token, ">") == 0)
+	else if (ft_strcmp(token, "||") == 0)
+		return N_PIPES;
+		else if (ft_strcmp(token, ">" || ft_strcmp(token, "<>")) == 0)
 		return N_RED_OUT;
 	else if (ft_strcmp(token, ">>") == 0)
 		return N_RED_OUT_APPEND;
@@ -47,29 +49,34 @@ t_type set_type(char *token)
 		return N_RED_IN;
 	else if (ft_strcmp(token, "<<") == 0)
 		return N_RED_HEREDOC;
+	else if (ft_strcmp(token, ";") == 0)
+		return N_SEMICOL;
+	else if (ft_strcmp(token, ";;") == 0)
+		return N_SEMICOLS;
 	else
 		return N_WORD;
 }
 
 int validate_syntax(t_cmd *cmd_list)
 {
-	t_cmd *curr = cmd_list;
+	t_cmd 	*curr;
+	char	*string;
 
-	if (curr && curr->type == N_PIPE)
-		return (printf("Syntax error: unexpected '|'\n"), 1);
+	curr = cmd_list;
+	string = "bash : syntax error near near unexpected token";
+	if (curr && (curr->type == N_PIPE || curr->type == N_SEMICOL))
+		return (printf("%s '%s'\n", string, curr->content), 1);
 	while (curr)
 	{
 		if (curr->type == N_PIPE)
-		{
 			if (!curr->next || curr->next->type != N_WORD) // 파이프 뒤에 명령어가 없으면 에러
-				return (printf("Syntax error near '|'\n"), 1);
-		}
+				return (printf("%s '|'\n", string), 1);
 		else if (curr->type == N_RED_OUT || curr->type == N_RED_OUT_APPEND || 
 				curr->type == N_RED_IN || curr->type == N_RED_HEREDOC)
-		{
 			if (!curr->next || curr->next->type != N_WORD) // 리다이렉션 뒤에 파일명이 없으면 에러
-				return (printf("Syntax error near '%s'\n", curr->content), 1);
-		}
+				return (printf("%s '%s'\n", string, curr->content), 1);
+		else if (curr->type == N_PIPES || curr->type == N_SEMICOLS)
+			return (printf("%s '%s'\n", string, curr->content), 1);
 		curr = curr->next;
 	}
 	return 0; // 정상일 경우
