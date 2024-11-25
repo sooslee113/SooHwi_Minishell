@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 23:24:04 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/25 03:19:03 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/26 01:38:54 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,41 +38,47 @@ int	check_quote_num(char *input)// 따옴표 짝 맞는지 먼저 보고 틀리�
 t_type set_type(char *token)
 {
 	if (ft_strcmp(token, "|") == 0)
-		return N_PIPE;
-	else if (ft_strcmp(token, ">") == 0)
+		return N_PIP;
+	else if (ft_strcmp(token, "||") == 0)
+		return N_PIPS;
+	else if (ft_strcmp(token, ">") == 0 || ft_strcmp(token, "<>") == 0)
 		return N_RED_OUT;
 	else if (ft_strcmp(token, ">>") == 0)
-		return N_RED_OUT_APPEND;
+		return N_RED_OUT_AP;
 	else if (ft_strcmp(token, "<") == 0)
 		return N_RED_IN;
 	else if (ft_strcmp(token, "<<") == 0)
-		return N_RED_HEREDOC;
+		return N_RED_HRDC;
+	else if (ft_strcmp(token, ";") == 0)
+		return N_SEMIC;
+	else if (ft_strcmp(token, ";;") == 0)
+		return N_SEMICS;
 	else
 		return N_WORD;
 }
 
 int validate_syntax(t_cmd *cmd_list)
 {
-	t_cmd *curr = cmd_list;
+	t_cmd 	*cur;
+	char	*string;
 
-	if (curr && curr->type == N_PIPE)
-		return (printf("Syntax error: unexpected '|'\n"), 1);
-	while (curr)
+	cur = cmd_list;
+	string = "bash : syntax error near unexpected token";
+	if (cur && (cur->type == N_PIP || cur->type == N_SEMIC))
+		return (printf("%s '%s'\n", string, cur->content), 1);
+	while (cur)
 	{
-		if (curr->type == N_PIPE)
-		{
-			if (!curr->next || curr->next->type != N_WORD) // 파이프 뒤에 명령어가 없으면 에러
-				return (printf("Syntax error near '|'\n"), 1);
-		}
-		else if (curr->type == N_RED_OUT || curr->type == N_RED_OUT_APPEND || 
-				curr->type == N_RED_IN || curr->type == N_RED_HEREDOC)
-		{
-			if (!curr->next || curr->next->type != N_WORD) // 리다이렉션 뒤에 파일명이 없으면 에러
-				return (printf("Syntax error near '%s'\n", curr->content), 1);
-		}
-		curr = curr->next;
+		if (cur->type == N_PIP && (!cur->next || cur->next->type != N_WORD))
+			return (printf("%s '|'\n", string), 1);
+		else if ((cur->type == N_RED_OUT || cur->type == N_RED_OUT_AP\
+			|| cur->type == N_RED_IN || cur->type == N_RED_HRDC)\
+			&& (!cur->next || cur->next->type != N_WORD))// 리디션 뒤 WORD 없으면 에러
+			return (printf("%s 'newline'\n", string), 1);
+		else if (cur->type == N_PIPS || cur->type == N_SEMICS)
+			return (printf("%s '%s'\n", string, cur->content), 1);
+		cur = cur->next;
 	}
-	return 0; // 정상일 경우
+	return (0); // 정상일 경우
 }
 
 t_cmd	*set_cmd_struct(char **toks)
@@ -110,10 +116,11 @@ t_cmd	*tokenize_input(char *input, t_sh *sh_list)
 		return (NULL);//아무것도안쳤을때 sigfault 방지
 	tok_cnt = 0;
 	if (check_quote_num(input) != 0)// 따옴표 짝 맞는지 먼저 보고 틀리면 에러 리턴
-		exit(1);//에러처리 따로 하기
+		exit(1);//에러 따로 처리
 	temp_toks = tokenize_split(input, &tok_cnt, &(sh_list->pipe_cnt));//[tokenize_split.c] : 명령어 토큰으로 분해
 	head_cmd = set_cmd_struct(temp_toks);
-	validate_syntax(head_cmd);
+	if (validate_syntax(head_cmd) == 1)
+		exit(1);//에러 따로 처리
 	// 테스트 함수
 	printf("-----\n");
 	free_tokens(temp_toks, tok_cnt);
