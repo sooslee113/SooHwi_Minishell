@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:43:02 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/24 17:49:11 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/25 23:39:53 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <termios.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "../libft/libft.h"
 
 typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
@@ -70,6 +72,23 @@ typedef struct s_sh //통합(mini"sh"ell)구조체
 	t_cmd				cmd;
 }t_sh;
 
+typedef struct s_redlist //통합(mini"sh"ell)구조체
+{
+	char *type;
+	char *file_name;
+}t_redlist;
+
+typedef struct s_pipe // pipe 구조체
+{
+	char **argv;
+	int exit_code;
+	int *fd;
+	pid_t   pid;
+	t_redlist *redlist;
+	struct s_pipe *next;
+	struct s_pipe *prev;
+}t_pipe;
+
 //error.c
 void		print_error_and_exit(char *err_msg);
 
@@ -87,8 +106,6 @@ void		add_export_list(t_export **p_export, char *t_key, char *t_value);
 void		split_list(t_export *head, t_export **front, t_export **back);
 t_export	*sorted_merge(t_export *a, t_export *b);
 void		envp_sort(t_export **export_head);
-
-
 
 //sinal.c
 void		sig_handler(int sig);
