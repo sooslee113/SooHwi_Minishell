@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 23:24:04 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/26 01:38:54 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/26 18:02:23 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int validate_syntax(t_cmd *cmd_list)
 	cur = cmd_list;
 	string = "bash : syntax error near unexpected token";
 	if (cur && (cur->type == N_PIP || cur->type == N_SEMIC))
-		return (printf("%s '%s'\n", string, cur->content), 1);
+		return (printf("%s '%s'\n", string, cur->con), 1);
 	while (cur)
 	{
 		if (cur->type == N_PIP && (!cur->next || cur->next->type != N_WORD))
@@ -75,7 +75,7 @@ int validate_syntax(t_cmd *cmd_list)
 			&& (!cur->next || cur->next->type != N_WORD))// 리디션 뒤 WORD 없으면 에러
 			return (printf("%s 'newline'\n", string), 1);
 		else if (cur->type == N_PIPS || cur->type == N_SEMICS)
-			return (printf("%s '%s'\n", string, cur->content), 1);
+			return (printf("%s '%s'\n", string, cur->con), 1);
 		cur = cur->next;
 	}
 	return (0); // 정상일 경우
@@ -89,7 +89,7 @@ t_cmd	*set_cmd_struct(char **toks)
 
 	i = 0;
 	head_cmd = malloc(sizeof(t_cmd));
-	head_cmd->content = ft_strdup(toks[i]);
+	head_cmd->con = ft_strdup(toks[i]);
 	head_cmd->type = set_type(toks[i]);
 	head_cmd->next = NULL;
 	curr_cmd = head_cmd;
@@ -98,7 +98,7 @@ t_cmd	*set_cmd_struct(char **toks)
 	{
 		curr_cmd->next = malloc(sizeof(t_cmd));
 		curr_cmd = curr_cmd->next;
-		curr_cmd->content = ft_strdup(toks[i]);
+		curr_cmd->con = ft_strdup(toks[i]);
 		curr_cmd->type = set_type(toks[i]);
 		curr_cmd->next = NULL;
 		i++;

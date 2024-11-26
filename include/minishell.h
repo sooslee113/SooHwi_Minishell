@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/26 01:41:13 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/26 18:01:02 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ typedef enum s_type
 
 typedef struct s_cmd
 {
-	char			*content;
+	char			*con;
 	t_type			type;
 	struct s_cmd	*next;
 }t_cmd;
