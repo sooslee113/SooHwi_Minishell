@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/19 11:02:39 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/26 18:16:45 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,17 @@ int	ft_isspace(int c)
 		return (1);
 	else
 		return (0);
+}
+
+void *safe_malloc(size_t bytes)
+{
+    void *ret;
+
+    ret = malloc(bytes);
+    if (NULL == ret)
+    {
+        perror("malloc error");
+        exit(EXIT_FAILURE);
+    }
+    return (ret);
 }

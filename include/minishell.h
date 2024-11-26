@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 17:43:02 by sooslee           #+#    #+#             */
-/*   Updated: 2024/11/24 17:49:11 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/26 18:16:24 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,23 @@ typedef struct s_sh //통합(mini"sh"ell)구조체
 	struct sigaction	sa;
 	t_cmd				cmd;
 }t_sh;
+
+typedef struct s_redlist //통합(mini"sh"ell)구조체
+{
+	char *type;
+	char *file_name;
+}t_redlist;
+
+typedef struct s_pipe // pipe 구조체
+{
+	char **argv;
+	int exit_code;
+	int *fd;
+    pid_t   pid;
+	t_redlist *redlist;
+	struct s_pipe *next;
+	struct s_pipe *prev;
+}t_pipe;
 
 //error.c
 void		print_error_and_exit(char *err_msg);
