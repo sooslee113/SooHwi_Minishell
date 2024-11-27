@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/26 18:30:35 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/27 11:27:47 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,5 +130,7 @@ int			ft_strcmp(const char *s1, const char *s2);
 int			ft_isspace(int c);
 void		ft_lstadd_back_2(t_cmd *lst, t_cmd *new);
 
+//builtin
+void ft_echo(t_cmd *cmd);
 
 #endif
