@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 void *safe_malloc(size_t bytes)
 {
@@ -95,7 +95,13 @@ int main(int argc, char **argv, char **envp)
     printf("Commands in pipe:\n");
     while (temp != NULL)
     {
-        printf("- %s\n", temp->argv[0]);
+        int i = 0;
+        while (temp->argv[i])
+        {
+            printf("- %s\n", temp->argv[i]);  
+            i ++;       /* code */
+        }
+    
         temp = temp->next;
     }
 

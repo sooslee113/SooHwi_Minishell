@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/27 15:03:13 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/27 17:05:16 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,9 +291,16 @@ void working_unset(t_sh *sh_list, char *cmd)
         printf("Error: ft_split failed\n");
         return;
     }
-
-    i = 0; // `ept_temp[0]`는 "unset" 명령어 자체이므로 건너뛰기
-    while (ept_temp[i]) // `ept_temp[1]`부터 시작하여 처리
+    /* 디버깅용*/
+        i = 0;
+    while(ept_temp[i])
+    {
+        printf("ept_temp[%d] = %s ", i,ept_temp[i]);
+        i ++;
+    }
+    /* 여기까지 */
+    i = 0; // ept_temp에는 삭제할 키 값이 있다.
+    while (ept_temp[i]) // `ept_temp[0]`부터 시작하여 처리
     {
         printf("Unset target: %s\n", ept_temp[i]); // unset 명령어 뒤에 인자 출력
         removeNodeValue(sh_list, ept_temp[i]); // 해당 키를 export list에서 삭제
@@ -328,11 +335,135 @@ void	ft_pwd()
     return ;
 }
 // 여기 까지가 pwd
-//
+
+// 여기서부터 pipe
+void *safe_malloc(size_t bytes)
+{
+    void *ret;
+
+    ret = malloc(bytes);
+    if (NULL == ret)
+    {
+        perror("malloc error");
+        exit(EXIT_FAILURE);
+    }
+    return (ret);
+}
+
+void free_pipe(t_pipe *pipe)
+{
+    t_pipe *temp;
+
+    while (pipe != NULL)
+    {
+        temp = pipe->next;
+
+        free(pipe->fd);
+        if (pipe->redlist)
+        {
+            free(pipe->redlist->type);
+            free(pipe->redlist->file_name);
+            free(pipe->redlist);
+        }
+
+        free(pipe);
+        pipe = temp;
+    }
+}
+
+void init_pipe(t_pipe **pipe)   
+{
+    *pipe = safe_malloc(sizeof(t_pipe));
+    (*pipe)->argv = NULL;
+    (*pipe)->exit_code = 1;
+    (*pipe)->fd = safe_malloc(sizeof(int) * 2);
+    (*pipe)->pid = 0;
+    (*pipe)->redlist = safe_malloc(sizeof(t_redlist));
+    (*pipe)->redlist->type = NULL;
+    (*pipe)->redlist->file_name = NULL;
+    (*pipe)->next = NULL;
+    (*pipe)->prev = NULL;
+}
+
+t_pipe *create_pipe_node(t_pipe **pipe_line, t_pipe *current_pipe)
+{
+    t_pipe *new_pipe;
+
+    init_pipe(&new_pipe); // 새 파이프 노드 초기화
+
+    if (*pipe_line == NULL) // 처음 생성되는 노드일 경우
+    {
+        *pipe_line = new_pipe;
+        return *pipe_line;
+    }
+    else // 기존 노드가 있을 경우 연결
+    {
+        current_pipe->next = new_pipe;
+        new_pipe->prev = current_pipe;
+        return new_pipe;
+    }
+}
+
+int count_cmd_segment(t_cmd *cmd)
+{
+    int count;
+    
+    count = 0;
+    while (cmd != NULL && ft_strncmp(cmd->con, "|", 1) != 0)
+    {
+        count++;
+        cmd = cmd->next;
+    }
+
+    return count;
+}
+void fill_pipe_argv(t_pipe *current_pipe, t_cmd **cmd)
+{
+    int i = 0;
+    t_cmd *temp_cmd = *cmd;
+
+    while (temp_cmd != NULL && ft_strncmp(temp_cmd->con, "|", 1) != 0)
+    {
+        current_pipe->argv[i] = ft_strdup(temp_cmd->con); // 명령어 복사
+        temp_cmd = temp_cmd->next;
+        i++;
+    }
+    current_pipe->argv[i] = NULL; // argv의 마지막 요소 NULL
+    
+    *cmd = temp_cmd; // 현재 명령어 위치를 업데이트
+}
+t_pipe *fill_in_pipe(t_cmd *cmd, t_pipe *pipe_line)
+{
+    t_cmd *temp_cmd;
+    t_pipe *current_pipe = NULL;
+    int count;
+
+    count = 0;
+    temp_cmd = cmd;
+    // 파이프 블록 처리
+    while (temp_cmd != NULL)
+    {
+        // 새 t_pipe 노드 초기화
+        current_pipe = create_pipe_node(&pipe_line, current_pipe);
+        // 현재 파이프 세그먼트 크기 계산
+        count = count_cmd_segment(temp_cmd);
+        // argv 메모리 할당
+        current_pipe->argv = safe_malloc(sizeof(char *) * (count + 1));
+        // argv에 명령어 및 인자 복사
+         fill_pipe_argv(current_pipe, &temp_cmd);
+        // 파이프 세그먼트가 끝난 경우, 다음으로 이동
+        if (temp_cmd != NULL && ft_strncmp(temp_cmd->con, "|", 1) == 0)
+            temp_cmd = temp_cmd->next;
+    }
+
+    return pipe_line;
+}
+// 여기 까지가 pipe
 int	main(int ac, char** av, char **envp)
 {
 	t_sh 	sh_list;
 	t_cmd	*head_cmd;
+    t_pipe  *pipe_line;
 	char	*input;
 
 	(void)ac;
@@ -340,7 +471,8 @@ int	main(int ac, char** av, char **envp)
 	init_sh_list(&sh_list);
 	parsing_envp(envp, &sh_list);
 	sig_handle(&sh_list);
-
+    pipe_line = NULL;
+    //init_pipe(&pipe_line);
 	while(1)
 	{
 		input = readline("minishell$ ");
@@ -349,38 +481,62 @@ int	main(int ac, char** av, char **envp)
 		if(*input)
 			add_history(input);
 		head_cmd = tokenize_input(input, &sh_list);//head_cmd에는 모든 명령어 각각이 t_cmd형태로 토크나이징 및 타입이 지정되어 있음.
-		//execute(&sh_list, head_cmd, envp);
-		//echo 테스트
-		if (head_cmd && ft_strncmp(head_cmd->con, "echo", 4) == 0)
-        {
-            ft_echo(head_cmd->next); // "echo" 이후의 명령어를 처리
-        }
-		else if (head_cmd && ft_strncmp(head_cmd->con, "env", 3) == 0) //env테스트
-		{
-			print_export_list(sh_list.export_head); // 환경 변수 출력
-		}
-		else if (head_cmd && ft_strncmp(head_cmd->con, "export", 6) == 0)
-		{
-    		if (head_cmd->next == NULL)
-        		print_export_list2(sh_list.export_head); // export만 입력한 경우
-    		else
-        		insert_envp(head_cmd->next, &sh_list); // key=value 입력 처리
-		}
-        else if (head_cmd && ft_strncmp(head_cmd->con, "unset", 5) == 0)
-        {
-            if (head_cmd->next)  // unset 명령어 뒤에 값이 있을 때만 처리
-                working_unset(&sh_list, head_cmd->next->con); // unset 명령어 처리
-        }
-		else if (head_cmd && ft_strncmp(head_cmd->con, "pwd", 3) == 0)
-		{
-			ft_pwd(); // 현재 디렉토리 출력
-		}
+        pipe_line = fill_in_pipe(head_cmd, pipe_line);
 		t_cmd *curr_cmd = head_cmd;//테스트 코드
-		for (;curr_cmd != NULL; curr_cmd = curr_cmd->next)////////////////
-			printf("cmd : %s / type : %d\n", curr_cmd->con, curr_cmd->type);//////////////////
-		
+		for (;curr_cmd != NULL; curr_cmd = curr_cmd->next) ////////////////
+        {
+			printf("cmd : %s / type : %d\n", curr_cmd->con, curr_cmd->type); //////////////////
+        }
+        // 파이프 확인용 디버깅
+		t_pipe *temp = pipe_line;
+        while (temp != NULL)
+        {
+            printf("Pipe command:\n");
+            for (int i = 0; temp->argv[i] != NULL; i++)
+            {
+                printf("- %s\n", temp->argv[i]);
+            }
+            temp = temp->next;
+        }
 		free(input);
 	}
 	printf("The End!\n");
 	return (0);
 }
+
+
+/*
+테스트 케이스
+	//execute(&sh_list, head_cmd, envp);
+		//echo 테스트
+		// if (head_cmd && ft_strncmp(head_cmd->con, "echo", 4) == 0)
+        // {
+        //     ft_echo(head_cmd->next); // "echo" 이후의 명령어를 처리
+        // }
+		// else if (head_cmd && ft_strncmp(head_cmd->con, "env", 3) == 0) //env테스트
+		// {
+		// 	print_export_list(sh_list.export_head); // 환경 변수 출력
+		// }
+		// else if (head_cmd && ft_strncmp(head_cmd->con, "export", 6) == 0) // export 테스트
+		// {
+    	// 	if (head_cmd->next == NULL)
+        // 		print_export_list2(sh_list.export_head); // export만 입력한 경우
+    	// 	else
+        // 		insert_envp(head_cmd->next, &sh_list); // key=value 입력 처리
+		// }
+        // else if (head_cmd && ft_strncmp(head_cmd->con, "unset", 5) == 0)
+        // {
+        //     if (head_cmd->next)
+        //     {  // unset 명령어 뒤에 값이 있을 때만 처리
+        //         while(head_cmd->next != NULL)
+        //         {
+        //             working_unset(&sh_list, head_cmd->next->con);
+        //             head_cmd = head_cmd -> next;
+        //         }
+        //     } // unset 명령어 처리
+        // }
+		// else if (head_cmd && ft_strncmp(head_cmd->con, "pwd", 3) == 0)
+		// {
+		// 	ft_pwd(); // 현재 디렉토리 출력
+		// }
+*/
