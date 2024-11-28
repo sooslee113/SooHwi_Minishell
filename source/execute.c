@@ -6,7 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 15:20:30 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/28 20:59:20 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:26:50 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ void	execute(t_sh *sh_list, t_cmd *head_cmd, char **envp)
 	int		pre_fd;//이전 명령어의 출력fd
 	int		status;
 
+	pre_fd = -1;//처음 명령어는 입력이 없으니까 이렇게 지정해주기
 	curr_cmd = head_cmd;
 	while (curr_cmd != NULL)
 	{
-		pipe(pipe_fd);//파이프설정
 		if (curr_cmd->type == N_PIP)// '|'일때
 			curr_cmd = curr_cmd->next;
 		else if (curr_cmd->type == N_RED_OUT || curr_cmd->type == N_RED_OUT_AP\
@@ -31,6 +31,8 @@ void	execute(t_sh *sh_list, t_cmd *head_cmd, char **envp)
 			handle_redirection(&curr_cmd);
 		else//일반명령어일 경우 실행시작!
 		{
+			if (curr_cmd->next && curr_cmd->next->type == N_PIP)
+				pipe(pipe_fd);//파이프설정
 			pid = fork();//여기부터 자식 프로세스 생성 및 실행
 			if (pid == 0)
 			{
@@ -49,24 +51,21 @@ void	execute(t_sh *sh_list, t_cmd *head_cmd, char **envp)
 					execute_builtin(sh_list, curr_cmd, envp);
 				else
 					execute_external(curr_cmd, envp);
-				exit(EXIT_FAILURE);
+				exit(EXIT_FAILURE);//자식프로세스 종료
 			}
-			else
+			else//부모
 			{
-				close(pipe_fd[0]);
-				dup2(STDOUT_FILENO, pipe_fd[1]);
-				close(pipe_fd[1]);
-			}
-				
-			if (pre_fd != -1)
-				close(pre_fd);
-			if (curr_cmd->next && curr_cmd->next->type == N_PIP)
-			{
-				close(pipe_fd[1]);
-				pre_fd = pipe_fd[0];
-			}
+				if (pre_fd != -1)//처음프로세스가 아니면
+					close(pre_fd);//이전 파이프 출력 닫기
+				if (curr_cmd->next && curr_cmd->next->type == N_PIP)
+				{//다음 명령어를 위해 현재 파이프 유지하는 부분
+					close(pipe_fd[1]);//파이프 쓰는 부분 닫기
+					pre_fd = pipe_fd[0];//읽는 부분 유지
+				}
+				else
+					pre_fd = -1;//다음 파이프 없으면 초기화
 			curr_cmd = curr_cmd->next;
 		}
 	}
-	while (wait(&status) > 0);
+	while (wait(&status) > 0);//모든 자식프로세스가 종료될 떄 가지 계속 wait호출
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/27 16:26:53 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/28 21:11:31 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ typedef struct s_sh //통합(mini"sh"ell)구조체
 	int					pipe_cnt;
 }t_sh;
 
-typedef struct s_redlist //통합(mini"sh"ell)구조체
+typedef struct s_redlist //
 {
 	char *type;
 	char *file_name;
