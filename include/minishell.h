@@ -88,6 +88,7 @@ typedef struct s_pipe // pipe 구조체
 	int *fd;
 	pid_t   pid;
 	t_redlist *redlist;
+	t_type			type;
 	struct s_pipe *next;
 	struct s_pipe *prev;
 }t_pipe;
@@ -96,7 +97,9 @@ typedef struct s_pipe // pipe 구조체
 void		print_error_and_exit(char *err_msg);
 
 //execute.c
-void		execute(t_sh *sh_list, t_cmd *head_cmd, char **envp);
+// void		execute(t_sh *sh_list, t_cmd *head_cmd, char **envp);
+void	execute(t_sh *sh_list, t_pipe *head_pipe, char **envp);
+
 
 //main.c
 void		init_sh_list(t_sh *sh_list);
@@ -133,4 +136,5 @@ void		ft_lstadd_back_2(t_cmd *lst, t_cmd *new);
 //builtin
 void ft_echo(t_cmd *cmd);
 
+//
 #endif

@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/27 17:05:16 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/11/28 21:25:09 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -417,6 +417,28 @@ int count_cmd_segment(t_cmd *cmd)
 
     return count;
 }
+
+t_type set_type2(char *token)
+{
+	if (ft_strcmp(token, "|") == 0)
+		return N_PIP;
+	else if (ft_strcmp(token, "||") == 0)
+		return N_PIPS;
+	else if (ft_strcmp(token, ">") == 0 || ft_strcmp(token, "<>") == 0)
+		return N_RED_OUT;
+	else if (ft_strcmp(token, ">>") == 0)
+		return N_RED_OUT_AP;
+	else if (ft_strcmp(token, "<") == 0)
+		return N_RED_IN;
+	else if (ft_strcmp(token, "<<") == 0)
+		return N_RED_HRDC;
+	else if (ft_strcmp(token, ";") == 0)
+		return N_SEMIC;
+	else if (ft_strcmp(token, ";;") == 0)
+		return N_SEMICS;
+	else
+		return N_WORD;
+}
 void fill_pipe_argv(t_pipe *current_pipe, t_cmd **cmd)
 {
     int i = 0;
@@ -429,7 +451,7 @@ void fill_pipe_argv(t_pipe *current_pipe, t_cmd **cmd)
         i++;
     }
     current_pipe->argv[i] = NULL; // argv의 마지막 요소 NULL
-    
+    current_pipe->type = set_type2(current_pipe->argv[0]);
     *cmd = temp_cmd; // 현재 명령어 위치를 업데이트
 }
 t_pipe *fill_in_pipe(t_cmd *cmd, t_pipe *pipe_line)
@@ -487,17 +509,8 @@ int	main(int ac, char** av, char **envp)
         {
 			printf("cmd : %s / type : %d\n", curr_cmd->con, curr_cmd->type); //////////////////
         }
-        // 파이프 확인용 디버깅
-		t_pipe *temp = pipe_line;
-        while (temp != NULL)
-        {
-            printf("Pipe command:\n");
-            for (int i = 0; temp->argv[i] != NULL; i++)
-            {
-                printf("- %s\n", temp->argv[i]);
-            }
-            temp = temp->next;
-        }
+
+        //execute(&sh_list, temp, envp);
 		free(input);
 	}
 	printf("The End!\n");
@@ -540,3 +553,16 @@ int	main(int ac, char** av, char **envp)
 		// 	ft_pwd(); // 현재 디렉토리 출력
 		// }
 */
+
+        // // 파이프 확인용 디버깅
+		// t_pipe *temp = pipe_line;
+        // while (temp != NULL)
+        // {
+        //     printf("Pipe command:\n");
+        //     for (int i = 0; temp->argv[i] != NULL; i++)
+        //     {
+        //         printf("- %s\n", temp->argv[i]);
+        //         printf("%d", temp->type);
+        //     }
+        //     temp = temp->next;
+        // }
