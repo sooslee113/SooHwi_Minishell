@@ -130,6 +130,5 @@ int main(int argc, char **argv, char **envp)
             }
     	}
 	}
-	else if (ft_strcmp(argv[1], "hello"))
-		printf("hello world");
+
 }

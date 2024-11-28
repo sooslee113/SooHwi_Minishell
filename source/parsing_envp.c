@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_envp.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:31:19 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/26 01:40:24 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/27 15:46:57 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,5 @@ void	parsing_envp(char **envp, t_sh *p_sh_list)
 		add_export_list(&(p_sh_list->export_head), t_key, t_value);
 		i++;
 	}
-	envp_sort(&(p_sh_list->export_head));
+	//envp_sort(&(p_sh_list->export_head));
 }

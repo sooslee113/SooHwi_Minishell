@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:58:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 23:03:51 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/11/27 15:46:46 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,10 @@ void	sig_handle(t_sh *sh_list)
         perror("sigaction");
         exit(EXIT_FAILURE);
 	}
+    else if (sigaction(SIGQUIT, &(sh_list->sa), NULL) == -1)
+    {
+                perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 }
 
