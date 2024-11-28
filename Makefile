@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+         #
+#    By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/07 20:26:36 by donghwi2          #+#    #+#              #
-#    Updated: 2024/11/27 15:35:13 by donghwi2         ###   ########.fr        #
+#    Updated: 2024/11/29 03:22:00 by donghwi2         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,8 @@ LIBFT		=	./libft/libft.a
 RM			=	rm -rf
 SRCS		=	main.c parsing_envp.c parsing_export.c signal.c\
 				tokenize_input.c tokenize_split.c util.c error.c\
+				pipe_lst.c built_echo.c built_env.c built_export.c\
+				built_pwd.c built_unset.c
 
 SRC			=	$(addprefix ./source/,$(SRCS))
 OBJ			=	$(SRC:.c=.o)
