@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/26 18:16:45 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/12/01 17:29:01 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,43 @@ int	ft_isspace(int c)
 		return (0);
 }
 
-void *safe_malloc(size_t bytes)
+void	ft_lstadd_back_2(t_cmd *lst, t_cmd *new)
 {
-    void *ret;
+	t_cmd	*ptr;
 
-    ret = malloc(bytes);
-    if (NULL == ret)
-    {
-        perror("malloc error");
-        exit(EXIT_FAILURE);
-    }
-    return (ret);
+	if (lst == NULL || new == NULL)
+		return ;
+	if (lst == NULL)
+	{
+		lst = new;
+		return ;
+	}
+	ptr = lst;
+	while (ptr->next != NULL)
+		ptr = ptr->next;
+	ptr->next = new;
 }
+void	*safe_malloc(size_t bytes)
+{
+	void	*ret;
+
+	ret = malloc(bytes);
+	if (NULL == ret)
+	{
+		print_error_and_exit("malloc errror");
+		return (NULL);
+	}
+	return (ret);
+}
+// void	init_cmd_node()
+// {	
+// 	ft_bzero(sh_list->cmd.command, 128);
+// 	while (i < 128)
+// 	{
+// 		ft_bzero(sh_list->cmd.args[i], 1024);
+// 		i++;
+// 	}
+// 	sh_list->cmd.is_builtin = 0;
+// 	sh_list->cmd.input_redir = 0;
+// 	sh_list->cmd.output_redir = 0;
+// }

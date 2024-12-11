@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:58:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/18 23:03:51 by donghwi2         ###   ########.fr       */
+/*   Updated: 2024/12/01 16:26:48 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void sig_handler(int sig)
     {
         // printf("\nQuit!\n");
         // exit(1);
-        printf("\nCtrl + \\\n");
+        //printf("\nCtrl + \\\n");
         rl_on_new_line();    // 새 줄로 이동
         rl_replace_line("", 0); // 현재 입력 줄을 지움
         rl_redisplay();      // 프롬프트를 새로 표시 
@@ -43,5 +43,10 @@ void	sig_handle(t_sh *sh_list)
         perror("sigaction");
         exit(EXIT_FAILURE);
 	}
+    else if (sigaction(SIGQUIT, &(sh_list->sa), NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 }
 
