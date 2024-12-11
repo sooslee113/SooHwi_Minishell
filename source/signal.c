@@ -6,6 +6,8 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:58:32 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/12/01 16:26:48 by sooslee          ###   ########.fr       */
+=======
 /*   Updated: 2024/11/27 15:46:46 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -18,7 +20,7 @@ void sig_handler(int sig)
     {
         // printf("\nQuit!\n");
         // exit(1);
-        printf("\nCtrl + \\\n");
+        //printf("\nCtrl + \\\n");
         rl_on_new_line();    // 새 줄로 이동
         rl_replace_line("", 0); // 현재 입력 줄을 지움
         rl_redisplay();      // 프롬프트를 새로 표시 
@@ -45,7 +47,7 @@ void	sig_handle(t_sh *sh_list)
 	}
     else if (sigaction(SIGQUIT, &(sh_list->sa), NULL) == -1)
     {
-                perror("sigaction");
+        perror("sigaction");
         exit(EXIT_FAILURE);
     }
 }

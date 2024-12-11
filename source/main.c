@@ -6,6 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/12/10 16:35:49 by sooslee          ###   ########.fr       */
 /*   Updated: 2024/11/28 21:25:09 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -19,6 +20,98 @@ void	init_sh_list(t_sh *sh_list)
 	// 필요한 멤버 추가 초기화
 }
 
+void print_adcmd_node(t_adcmd *node, int node_num)
+{
+    if (!node)
+        return;
+
+    printf("\n=== Command Node %d ===\n", node_num);
+    
+    // Print argv contents
+    printf("Arguments:\n");
+    if (node->argv)
+    {
+        for (int i = 0; node->argv[i]; i++)
+        {
+            printf("  argv[%d]: '%s'\n", i, node->argv[i]);
+        }
+    }
+    else
+    {
+        printf("  No arguments\n");
+    }
+
+    // Print redirection information
+    printf("\nRedirections:\n");
+    if (node->redlist && node->redlist_count > 0)
+    {
+        for (int i = 0; i < node->redlist_count; i++)
+        {
+            if (node->redlist[i])
+            {
+                printf("  Redirection %d:\n", i);
+                printf("    Type: ");
+                switch (node->redlist[i]->type)
+                {
+                    case N_RED_IN:
+                        printf("Input (<)\n");
+                        break;
+                    case N_RED_OUT:
+                        printf("Output (>)\n");
+                        break;
+                    case N_RED_OUT_AP:
+                        printf("Append (>>)\n");
+                        break;
+                    case N_RED_HRDC:
+                        printf("Heredoc (<<)\n");
+                        break;
+                    default:
+                        printf("Unknown (%d)\n", node->redlist[i]->type);
+                }
+                printf("    File: '%s'\n", node->redlist[i]->file_name ? 
+                       node->redlist[i]->file_name : "NULL");
+            }
+        }
+    }
+    else
+    {
+        printf("  No redirections\n");
+    }
+
+    // Print pipe information
+    printf("\nPipe Status:\n");
+    printf("  pipe_fd[0]: %d\n", node->pipe_fd[0]);
+    printf("  pipe_fd[1]: %d\n", node->pipe_fd[1]);
+    printf("  Process ID: %d\n", node->pid);
+}
+
+void print_all_adcmd(t_sh *sh_list)
+{
+    t_adcmd *current;
+    int node_count;
+
+    if (!sh_list || !sh_list->ad_cmd)
+    {
+        printf("No command nodes found.\n");
+        return;
+    }
+
+    printf("\n====== COMMAND STRUCTURE DUMP ======\n");
+    printf("Total pipes: %d\n", sh_list->pipe_cnt);
+    
+    current = sh_list->ad_cmd;
+    node_count = 0;
+
+    while (current)
+    {
+        print_adcmd_node(current, node_count);
+        current = current->next;
+        node_count++;
+    }
+
+    printf("\nTotal nodes: %d\n", node_count);
+    printf("================================\n\n");
+=======
 void lets_free(char **str)
 {
     int i = 0;
@@ -80,6 +173,7 @@ void	print_export_list(t_export *export_head)
 			printf("%s=%s\n", temp->key, temp->value);
 		temp = temp->next;
 	}
+
 }
 // 여기까지가 env
 
@@ -493,6 +587,8 @@ int	main(int ac, char** av, char **envp)
 	init_sh_list(&sh_list);
 	parsing_envp(envp, &sh_list);
 	sig_handle(&sh_list);
+    sh_list.ad_cmd = NULL;
+    //init_pipe(&ad_cmd);
     pipe_line = NULL;
     //init_pipe(&pipe_line);
 	while(1)
@@ -502,6 +598,28 @@ int	main(int ac, char** av, char **envp)
 			break;
 		if(*input)
 			add_history(input);
+		sh_list.head_cmd = tokenize_input(input, &sh_list); //head_cmd에는 모든 명령어 각각이 t_cmd형태로 토크나이징 및 타입이 지정되어 있음.
+        fill_in_adcmd(&(sh_list), sh_list.head_cmd);	
+        
+        t_cmd *curr_cmd = sh_list.head_cmd;//테스트 코드
+		for (;curr_cmd != NULL; curr_cmd = curr_cmd->next)
+        {
+			printf("cmd : %s / type : %d\n", curr_cmd->con, curr_cmd->type);
+        }
+        // ad_cmd 내용 출력
+        // printf("Command arguments:\n");
+        // for (int i = 0; sh_list.ad_cmd->argv && sh_list.ad_cmd->argv[i]; i++) {
+        //     printf("argv[%d]: %s\n", i, sh_list.ad_cmd->argv[i]);
+        // }
+        // for (int i = 0; i < sh_list.ad_cmd->redlist_count; i++) 
+        // {
+        //     printf("Redirection Type: %d, File: %s\n",
+        //    sh_list.ad_cmd->redlist[i]->type,
+        //    sh_list.ad_cmd->redlist[i]->file_name);
+        // }
+        print_all_adcmd(&sh_list);
+        //execute(&sh_list, envp);
+
 		head_cmd = tokenize_input(input, &sh_list);//head_cmd에는 모든 명령어 각각이 t_cmd형태로 토크나이징 및 타입이 지정되어 있음.
         pipe_line = fill_in_pipe(head_cmd, pipe_line);
 		t_cmd *curr_cmd = head_cmd;//테스트 코드
@@ -517,7 +635,9 @@ int	main(int ac, char** av, char **envp)
 	return (0);
 }
 
+=======
 
+ 
 /*
 테스트 케이스
 	//execute(&sh_list, head_cmd, envp);
@@ -555,6 +675,8 @@ int	main(int ac, char** av, char **envp)
 */
 
         // // 파이프 확인용 디버깅
+		// t_pipe *temp = ad_cmd;
+=======
 		// t_pipe *temp = pipe_line;
         // while (temp != NULL)
         // {
@@ -565,4 +687,9 @@ int	main(int ac, char** av, char **envp)
         //         printf("%d", temp->type);
         //     }
         //     temp = temp->next;
+        // }
+/*
+
+*/
+
         // }

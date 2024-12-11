@@ -3,9 +3,11 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_input.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 23:24:04 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/12/11 12:24:16 by sooslee          ###   ########.fr       */
+=======
 /*   Updated: 2024/11/26 18:02:23 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -68,8 +70,11 @@ int validate_syntax(t_cmd *cmd_list)
 		return (printf("%s '%s'\n", string, cur->con), 1);
 	while (cur)
 	{
-		if (cur->type == N_PIP && (!cur->next || cur->next->type != N_WORD))
+		if (cur->type == N_PIP && (!cur->next /*|| cur->next->type != N_WORD*/))
+		{
 			return (printf("%s '|'\n", string), 1);
+		}
+
 		else if ((cur->type == N_RED_OUT || cur->type == N_RED_OUT_AP\
 			|| cur->type == N_RED_IN || cur->type == N_RED_HRDC)\
 			&& (!cur->next || cur->next->type != N_WORD))// 리디션 뒤 WORD 없으면 에러

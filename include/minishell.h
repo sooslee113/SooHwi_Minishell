@@ -6,6 +6,7 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/12/10 16:01:35 by sooslee          ###   ########.fr       */
 /*   Updated: 2024/11/28 21:11:31 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -26,7 +27,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "../libft/libft.h"
-
+#define MAX_ARGS 128
 
 typedef enum s_type
 {
@@ -68,12 +69,42 @@ typedef struct s_export //환경변수 -> 순서 오름차순
 	struct s_export	*next;
 }t_export, t_env;
 
+typedef struct s_redlist //
+{
+	t_type	type;
+	char *file_name;
+}t_redlist;
+
+typedef struct s_cmd
+{
+	char			*con;
+	t_type			type;
+	struct s_cmd	*next;
+}t_cmd;
+
+
+typedef struct s_adcmd // pipe 구조체
+{
+	char			**argv;//
+	t_type			type;
+	int				pipe_fd[2];//현재 프로세스와 다음 프로세스 사이 연결 파이프
+	pid_t			pid;
+	t_redlist		**redlist;
+	int				redlist_count;
+	int				exit_code;
+	struct s_adcmd	*next;
+	struct s_adcmd	*prev;
+}t_adcmd;
+
 typedef struct s_sh //통합(mini"sh"ell)구조체
 {
 	t_export			*export_head;//추후 env 및 export 방향성에 따라 추가 혹은 제거
+	t_cmd				*head_cmd;//type로 다 나뉜 명령어 연결리스트
+	t_adcmd				*ad_cmd;
 	struct sigaction	sa;
 	int					pipe_cnt;
-}t_sh;
+} t_sh;
+
 
 typedef struct s_redlist //
 {
@@ -98,6 +129,7 @@ void		print_error_and_exit(char *err_msg);
 
 //execute.c
 // void		execute(t_sh *sh_list, t_cmd *head_cmd, char **envp);
+void	execute(t_sh *sh_list, char **envp);
 void	execute(t_sh *sh_list, t_pipe *head_pipe, char **envp);
 
 
@@ -121,6 +153,7 @@ void		sig_handler(int sig);
 void		sig_handle(t_sh *sh_list);
 
 //tokenize_input.c
+t_type		set_type(char *token);
 int			check_quote_num(char *input);
 t_cmd		*tokenize_input(char *input, t_sh *sh_list);
 
@@ -132,9 +165,17 @@ void		free_tokens(char** toks, int tok_count);
 int			ft_strcmp(const char *s1, const char *s2);
 int			ft_isspace(int c);
 void		ft_lstadd_back_2(t_cmd *lst, t_cmd *new);
+void	*safe_malloc(size_t bytes);
 
 //builtin
 void ft_echo(t_cmd *cmd);
+
+//pipe
+//t_adcmd *fill_in_pipe(t_cmd *cmd, t_adcmd *ad_cmd);
+void fill_in_adcmd(t_sh *sh_list, t_cmd *head_cmd);
+int    check_is_red(char *cmd);
+
+
 
 //
 #endif

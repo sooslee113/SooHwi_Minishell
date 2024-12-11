@@ -6,6 +6,8 @@
 /*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
+/*   Updated: 2024/12/01 17:29:01 by sooslee          ###   ########.fr       */
+
 /*   Updated: 2024/11/24 20:39:49 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -56,6 +58,18 @@ void	ft_lstadd_back_2(t_cmd *lst, t_cmd *new)
 	while (ptr->next != NULL)
 		ptr = ptr->next;
 	ptr->next = new;
+}
+void	*safe_malloc(size_t bytes)
+{
+	void	*ret;
+
+	ret = malloc(bytes);
+	if (NULL == ret)
+	{
+		print_error_and_exit("malloc errror");
+		return (NULL);
+	}
+	return (ret);
 }
 
 // void	init_cmd_node()
