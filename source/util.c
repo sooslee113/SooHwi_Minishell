@@ -3,10 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   util.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 21:07:01 by donghwi2          #+#    #+#             */
 /*   Updated: 2024/12/01 17:29:01 by sooslee          ###   ########.fr       */
+
+/*   Updated: 2024/11/24 20:39:49 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +71,7 @@ void	*safe_malloc(size_t bytes)
 	}
 	return (ret);
 }
+
 // void	init_cmd_node()
 // {	
 // 	ft_bzero(sh_list->cmd.command, 128);
