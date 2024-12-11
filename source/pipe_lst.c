@@ -91,6 +91,7 @@ t_cmd *populate_redlist(t_adcmd *ad_cmd, t_cmd *head_cmd)
 }
 
 
+
 void real_making_argv(t_sh *sh_list, t_cmd *head_cmd) 
 {
     int one_dim;
@@ -187,8 +188,6 @@ char **create_new_argv(t_adcmd *ad_cmd)
     new_argv[j] = NULL; // NULL로 종료
     return new_argv;
 }
-
-
 
 void remove_file_name_from_argv(t_adcmd *ad_cmd)
 {

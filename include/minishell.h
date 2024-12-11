@@ -3,11 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
 /*   Updated: 2024/12/10 16:01:35 by sooslee          ###   ########.fr       */
-/*   Updated: 2024/11/28 21:11:31 by donghwi2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "../libft/libft.h"
+
 #define MAX_ARGS 128
 
 typedef enum s_type
@@ -42,12 +42,6 @@ typedef enum s_type
 	N_SEMICS,//		';;' -> just error
 }t_type;
 
-typedef struct s_cmd
-{
-	char			*con;
-	t_type			type;
-	struct s_cmd	*next;
-}t_cmd;
 
 typedef struct s_tokenizer //토큰화 과정에서 사용할 구조체
 {
@@ -82,19 +76,18 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }t_cmd;
 
-
-typedef struct s_adcmd // pipe 구조체
-{
-	char			**argv;//
-	t_type			type;
-	int				pipe_fd[2];//현재 프로세스와 다음 프로세스 사이 연결 파이프
-	pid_t			pid;
-	t_redlist		**redlist;
-	int				redlist_count;
-	int				exit_code;
-	struct s_adcmd	*next;
-	struct s_adcmd	*prev;
-}t_adcmd;
+	typedef struct s_adcmd // pipe 구조체
+	{
+		char			**argv;//
+		t_type			type;
+		int				pipe_fd[2];//현재 프로세스와 다음 프로세스 사이 연결 파이프
+		pid_t			pid;
+		t_redlist		**redlist;
+		int				redlist_count;
+		int				exit_code;
+		struct s_adcmd	*next;
+		struct s_adcmd	*prev;
+	}t_adcmd;
 
 typedef struct s_sh //통합(mini"sh"ell)구조체
 {
@@ -105,32 +98,12 @@ typedef struct s_sh //통합(mini"sh"ell)구조체
 	int					pipe_cnt;
 } t_sh;
 
-
-typedef struct s_redlist //
-{
-	char *type;
-	char *file_name;
-}t_redlist;
-
-typedef struct s_pipe // pipe 구조체
-{
-	char **argv;
-	int exit_code;
-	int *fd;
-	pid_t   pid;
-	t_redlist *redlist;
-	t_type			type;
-	struct s_pipe *next;
-	struct s_pipe *prev;
-}t_pipe;
-
 //error.c
 void		print_error_and_exit(char *err_msg);
 
 //execute.c
 // void		execute(t_sh *sh_list, t_cmd *head_cmd, char **envp);
 void	execute(t_sh *sh_list, char **envp);
-void	execute(t_sh *sh_list, t_pipe *head_pipe, char **envp);
 
 
 //main.c
@@ -175,7 +148,4 @@ void ft_echo(t_cmd *cmd);
 void fill_in_adcmd(t_sh *sh_list, t_cmd *head_cmd);
 int    check_is_red(char *cmd);
 
-
-
-//
 #endif
