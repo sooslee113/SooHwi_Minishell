@@ -42,8 +42,8 @@ void	init_ad_cmd(t_adcmd *ad_cmd)
 {
     ad_cmd->argv = NULL; // 명령어 인자 배열 초기화
     ad_cmd->type = 0; // 타입 초기화 (0 또는 기본값으로 설정)
-    ad_cmd->pipe_fd[0] = -1; // 파이프 초기화
-    ad_cmd->pipe_fd[1] = -1;
+    // ad_cmd->pipe_fd[0] = -1; // 파이프 초기화
+    //ad_cmd->pipe_fd = safe_malloc(2);
     ad_cmd->pid = -1; // 프로세스 ID 초기화
     ad_cmd->redlist = NULL; // 리다이렉션 리스트 초기화
     ad_cmd->redlist_count = 0; // 리다이렉션 개수 초기화
@@ -61,14 +61,13 @@ t_cmd *populate_redlist(t_adcmd *ad_cmd, t_cmd *head_cmd)
     redlist_count = count_redirections(head_cmd);
     ad_cmd->redlist = safe_malloc(sizeof(t_redlist *) * redlist_count);
     ad_cmd->redlist_count = redlist_count;
-
     temp_cmd = head_cmd;
     i = 0;
-
     while (temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0) 
     {
         if (temp_cmd->type == N_RED_OUT || temp_cmd->type == N_RED_OUT_AP ||
-            temp_cmd->type == N_RED_IN || temp_cmd->type == N_RED_HRDC) {
+            temp_cmd->type == N_RED_IN || temp_cmd->type == N_RED_HRDC) 
+        {
             ad_cmd->redlist[i] = safe_malloc(sizeof(t_redlist));
             ad_cmd->redlist[i]->type = temp_cmd->type;
             // 다음 노드가 파일 이름인지 확인 후 복사
@@ -80,7 +79,6 @@ t_cmd *populate_redlist(t_adcmd *ad_cmd, t_cmd *head_cmd)
             {
                 ad_cmd->redlist[i]->file_name = NULL;
             }
-
             i++;
             // 리다이렉션 토큰 및 파일 이름 건너뛰기
             temp_cmd = temp_cmd->next;
@@ -149,17 +147,7 @@ int is_in_redlist(t_adcmd *ad_cmd, char *arg)
     }
     return 0; // redlist에 존재하지 않음
 }
-void free_old_argv(char **argv)
-{
-    int i = 0;
 
-    while (argv[i])
-    {
-        free(argv[i]);
-        i++;
-    }
-    free(argv);
-}
 char **create_new_argv(t_adcmd *ad_cmd)
 {
     int new_size;
@@ -223,7 +211,6 @@ void fill_in_adcmd(t_sh *sh_list, t_cmd *head_cmd)
         real_making_argv(sh_list, curr_cmd);
         curr_cmd = populate_redlist(curr_adcmd, curr_cmd);
         remove_file_name_from_argv(curr_adcmd);
-
         // 파이프를 만나면 새로운 노드 생성
         if (curr_cmd && ft_strncmp(curr_cmd->con, "|", 1) == 0)
         {

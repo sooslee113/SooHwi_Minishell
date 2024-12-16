@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   execute.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/25 15:20:30 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/29 03:03:03 by donghwi2         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../include/minishell.h"
 
 // int	is_builtin(char *command)
@@ -50,133 +38,291 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-char	*find_command_path(char *command, char **envp)
+char	*finding_envp(char **envp)
 {
-	char	**paths;
-	char	*full_path;
+	char	*path;
 	int		i;
 
-	paths = get_env_paths(envp); // 환경변수 PATH에서 경로 목록 가져오기
-	if (!paths)
-		return (NULL);
 	i = 0;
-	while (paths[i])
+	while (envp[i])
 	{
-		full_path = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(full_path, command);
-		if (access(full_path, X_OK) == 0) // 실행 가능한 파일인지 확인
-			return (full_path);
-		free(full_path);
+		if (ft_strnstr(envp[i], "PATH=", 5))
+		{
+			path = ft_substr(envp[i], 5, ft_strlen(envp[i]) - 5);
+			return (path);
+		}
 		i++;
 	}
 	return (NULL);
 }
 
-void	execute_external(t_cmd *curr_cmd, char **envp)
+char	*find_command_path(t_adcmd *adcmd, char **envp)
 {
-	pid_t	pid;
-	int		status;
-	char	*command_path;
+	char **envp_collec;
+	char *path;
+	char *temp;
+	char *temp2;
+	int i;
 
-	command_path = find_command_path(curr_cmd->con, envp);
-	if (!command_path)
+	path = finding_envp(envp);
+	envp_collec = ft_split(path, ':');
+	temp = ft_strjoin("/", (adcmd)->argv[0]);
+	i = -1;
+	while(envp_collec[++i])
 	{
-		printf("Command not found: %s\n", curr_cmd->con);
-		exit(EXIT_FAILURE);
+		temp2 = ft_strjoin(envp_collec[i], temp);
+		if (access(temp2, X_OK) == -1)
+			free(temp2);
+		else
+			return (temp2);
 	}
+	free(temp);
+	free(path);
+	free_double((void**)envp_collec);
+	return (NULL);
+}
+void    here_is_redirection(t_adcmd *adcmd, int *file)
+{
+    //t_adcmd *current;
+    //current = adcmd;
+    if (adcmd->redlist[0]->type == N_RED_IN)
+        *file = open(adcmd->redlist[0]->file_name, O_RDONLY);
+    else if (adcmd->redlist[0]->type == N_RED_OUT)
+        *file = open(adcmd->redlist[0]->file_name, O_CREAT | O_RDONLY | O_TRUNC, 0644);
+    if (*file == -1)
+         print_error_and_exit("redirection is error");
 
-	pid = fork();
-	if (pid == 0) // 자식 프로세스
-	{
-		if (execve(command_path, curr_cmd->args, envp) == -1)
-		{
-			perror("Error executing command");
-			exit(EXIT_FAILURE);
-		}
-	}
-	else if (pid > 0) // 부모 프로세스
-	{
-		waitpid(pid, &status, 0); // 자식 프로세스 종료 대기
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			printf("Command failed with status: %d\n", WEXITSTATUS(status));
-	}
-	else // fork 실패
-	{
-		perror("Error creating process");
-		exit(EXIT_FAILURE);
-	}
-	free(command_path);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-void	execute(t_sh *sh_list, char **envp)
+void extreme_mini_execve(t_adcmd *adcmd, char **envp)
 {
-	t_cmd	*curr_cmd;
-	int		pre_fd;		// 이전 프로세스의 출력 파이프
-	int		status;
+    char *path;
+    int file;
 
-	curr_cmd = sh_list->head_cmd;
-	pre_fd = -1;			// 첫 번째 명령어는 입력이 없음
+    if (adcmd->redlist)
+        here_is_redirection(adcmd, &file);
 
-	while (curr_cmd != NULL)
-	{
-		if (curr_cmd->type == N_PIP) // '|'는 건너뜀
-			curr_cmd = curr_cmd->next;
-		// else if (curr_cmd->type == N_RED_OUT || curr_cmd->type == N_RED_OUT_AP || \
-		// 	curr_cmd->type == N_RED_IN || curr_cmd->type == N_RED_HRDC) // 리다이렉션 처리
-		// 	handle_redirection(&curr_cmd);
-		else// 일반 명령어일 경우 실행 시작!
-		{
-			// [파이프가 필요할 경우 생성]
-			if (curr_cmd->next && curr_cmd->next->type == N_PIP)
-				pipe(sh_list->ad_cmd->pipe_fd);
+    path = find_command_path(adcmd, envp);
+    if (!path)
+    {
+        fprintf(stderr, "minishell: command not found: %s\n", adcmd->argv[0]);
+        exit(1);
+    }
+    if (adcmd->pipe_fd[0] != -1)
+        close(adcmd->pipe_fd[0]);  // 읽기 끝 닫기
+    dup2(file, 0);
+    if (adcmd->pipe_fd[1] != -1)
+    {
+        dup2(adcmd->pipe_fd[1], STDOUT_FILENO);  // 파이프 쓰기를 표준 출력으로
+        close(adcmd->pipe_fd[1]);  // 원본 파이프 쓰기 닫기
+    }
+    close(file);
+    // close(adcmd->pipe_fd[0]);
+	// dup2(adcmd->pipe_fd[1], 1);
+	// close(adcmd->pipe_fd[1]);
+	
+    if (execve(path, adcmd->argv, envp) == -1)  // envp 전달
+    {
+        perror("execve");
+        free(path);
+        exit(1);
+    }
+}
 
-			sh_list->ad_cmd->pid = fork(); // 프로세스 생성
-			if (sh_list->ad_cmd->pid == 0) // [자식 프로세스]
-			{
-				
-				// [이전 프로세스의 출력과 연결]
-				if (pre_fd != -1)// 처음이 아닐 때(이전 OUT을 현재 IN으로 연결)
-				{
-					dup2(pre_fd, STDIN_FILENO);//이전 fd를 현재프로세스의 IN으로 덮기
-					close(pre_fd);//이전은 닫아주기
-				}
+void extreme_mini_execve2(t_adcmd *adcmd, char **envp)
+{
+    char *path;
 
-				// [다음 프로세스와 연결될 경우 파이프 출력 설정]
-				if (curr_cmd->next && curr_cmd->next->type == N_PIP)
-				{
-					close(sh_list->ad_cmd->pipe_fd[0]); // 파이프로부터 읽는 부분 닫기
-					dup2(sh_list->ad_cmd->pipe_fd[1], STDOUT_FILENO);
-					close(sh_list->ad_cmd->pipe_fd[1]);
-				}
-				
-				// [명령어 실행]
-				if (is_builtin(curr_cmd->con))
-					execute_builtin(sh_list, curr_cmd, envp);
-				else
-					execute_external(curr_cmd, envp);
+    int file;
+    if (adcmd->redlist)
+        here_is_redirection(adcmd, &file);
+    path = find_command_path(adcmd, envp);
+    if (!path)
+    {
+        fprintf(stderr, "minishell: command not found: %s\n", adcmd->argv[0]);
+        exit(1);
+    }
+    if (adcmd->prev && adcmd->prev->pipe_fd[1] != -1)
+        close(adcmd->prev->pipe_fd[1]);  // 이전 파이프의 쓰기 끝 닫기
+    dup2(file, 1);
+    if (adcmd->prev && adcmd->prev->pipe_fd[0] != -1)
+    {
+        dup2(adcmd->prev->pipe_fd[0], 0);  // 이전 파이프 읽기를 표준 입력으로
+        close(adcmd->prev->pipe_fd[0]);  // 원본 파이프 읽기 닫기
+    }
+    close(file);
+	// close(adcmd->pipe_fd[1]);
+	// dup2(adcmd->pipe_fd[0], 0);
+	// close(adcmd->pipe_fd[0]);
+    if (execve(path, adcmd->argv, NULL) == -1)
+    {
+        perror("execve");
+        free(path);
+        exit(1);
+    }
+}
+void execute_command(t_adcmd *cmd, char **envp)
+{
+    char *path;
+    int file;
+    int i;
 
-				exit(EXIT_FAILURE); // [자식 프로세스 종료]
-			}
-			else // [부모 프로세스]
-			{
-				// [이전 파이프 출력 닫기]
-				if (pre_fd != -1)
-					close(pre_fd);
-				
-				// [현재 파이프를 (다음 명령어를 위해) 유지]
-				if (curr_cmd->next && curr_cmd->next->type == N_PIP)
-				{
-					close(sh_list->ad_cmd->pipe_fd[1]); // 파이프 쓰기 닫기
-					pre_fd = sh_list->ad_cmd->pipe_fd[0]; // 읽기 부분 유지
-				}
-				else
-					pre_fd = -1; // 다음 파이프가 없으면 초기화
-			}
-			curr_cmd = curr_cmd->next; // [다음 명령어로 이동]
-		}
-	}
-	// [모든 자식 프로세스 대기]
-	while (wait(&status) > 0);
+    // 모든 리다이렉션 처리
+    i = 0;
+    while (i < cmd->redlist_count)
+    {
+        if (cmd->redlist[i]->type == N_RED_IN)
+        {
+            file = open(cmd->redlist[i]->file_name, O_RDONLY);
+            if (file == -1)
+            {
+                perror("redirection");
+                exit(1);
+            }
+            dup2(file, STDIN_FILENO);
+            close(file);
+        }
+        else if (cmd->redlist[i]->type == N_RED_OUT)
+        {
+            file = open(cmd->redlist[i]->file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+            if (file == -1)
+            {
+                perror("redirection");
+                exit(1);
+            }
+            dup2(file, STDOUT_FILENO);
+            close(file);
+        }
+        else if (cmd->redlist[i]->type == N_RED_OUT_AP)
+        {
+            file = open(cmd->redlist[i]->file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
+            if (file == -1)
+            {
+                perror("redirection");
+                exit(1);
+            }
+            dup2(file, STDOUT_FILENO);
+            close(file);
+        }
+        i++;
+    }
+    // 파이프 입력 처리 (이전 명령어에서 입력 받기)
+    if (cmd->prev && cmd->prev->pipe_fd[0] != -1)
+    {
+        dup2(cmd->prev->pipe_fd[0], STDIN_FILENO);
+        close(cmd->prev->pipe_fd[0]);
+    }
+    // 파이프 출력 처리 (다음 명령어로 출력 보내기)
+    if (cmd->next && cmd->pipe_fd[1] != -1)
+    {
+        dup2(cmd->pipe_fd[1], STDOUT_FILENO);
+        close(cmd->pipe_fd[1]);
+    }
+    // 모든 파이프 디스크립터 닫기
+    t_adcmd *tmp = cmd;
+    while (tmp)
+    {
+        if (tmp->pipe_fd[0] != -1)
+            close(tmp->pipe_fd[0]);
+        if (tmp->pipe_fd[1] != -1)
+            close(tmp->pipe_fd[1]);
+        tmp = tmp->next;
+    }
+    tmp = cmd;
+    while (tmp)
+    {
+        if (tmp->pipe_fd[0] != -1)
+            close(tmp->pipe_fd[0]);
+        if (tmp->pipe_fd[1] != -1)
+            close(tmp->pipe_fd[1]);
+        tmp = tmp->prev;
+    }
+
+    path = find_command_path(cmd, envp);
+    if (!path)
+    {
+        fprintf(stderr, "minishell: command not found: %s\n", cmd->argv[0]);
+        free_adcmd(cmd);
+        exit(1);
+    }
+    execve(path, cmd->argv, envp);
+    free(path);
+    free_adcmd(cmd);
+    perror("execve");
+    exit(1);
+}
+
+void execute(t_sh *sh_list, char **envp)
+{
+    t_adcmd *current;
+    t_adcmd *temp;
+    int status;
+
+    if (!sh_list || !sh_list->ad_cmd)
+        return;
+
+    current = sh_list->ad_cmd;
+    while (current != NULL)
+    {
+        if (current->next)
+        {
+            if (pipe(current->pipe_fd) < 0)
+                print_error_and_exit("pipe error");
+        }
+        else
+        {
+            current->pipe_fd[0] = -1;
+            current->pipe_fd[1] = -1;
+        }
+
+        current->pid = fork();
+        if (current->pid == -1)
+        {
+            perror("fork");
+            // 에러 발생 시 파이프 정리
+            temp = sh_list->ad_cmd;
+            while (temp != NULL)
+            {
+                if (temp->pipe_fd[0] != -1)
+                    close(temp->pipe_fd[0]);
+                if (temp->pipe_fd[1] != -1)
+                    close(temp->pipe_fd[1]);
+                temp = temp->next;
+            }
+            return;
+        }
+        if (current->pid == 0)
+        {
+            execute_command(current, envp);
+        }
+        else
+        {
+            // 현재 명령어의 write 엔드와 이전 명령어의 read 엔드를 닫음
+            if (current->pipe_fd[1] != -1)
+                close(current->pipe_fd[1]);
+            if (current->prev && current->prev->pipe_fd[0] != -1)
+                close(current->prev->pipe_fd[0]);
+        }
+        current = current->next;
+    }
+    // 남은 파이프 닫기
+    current = sh_list->ad_cmd;
+    while (current != NULL)
+    {
+        if (current->pipe_fd[0] != -1)
+            close(current->pipe_fd[0]);
+        if (current->pipe_fd[1] != -1)
+            close(current->pipe_fd[1]);
+        current = current->next;
+    }
+    // 모든 자식 프로세스 대기
+    current = sh_list->ad_cmd;
+    while (current != NULL)
+    {
+        waitpid(current->pid, &status, 0);
+        if (WIFEXITED(status))
+            current->exit_code = WEXITSTATUS(status);
+        current = current->next;
+    }
 }

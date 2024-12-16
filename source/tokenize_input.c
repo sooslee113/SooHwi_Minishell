@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tokenize_input.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 23:24:04 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/12/11 12:24:16 by sooslee          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../include/minishell.h"
 
 int	check_quote_num(char *input)// 따옴표 짝 맞는지 먼저 보고 틀리면 에러 리턴
@@ -109,17 +97,17 @@ t_cmd	*set_cmd_struct(char **toks)
 }
 
 t_cmd	*tokenize_input(char *input, t_sh *sh_list)
-{// input = "echo "hello" > file.txt"  ->  {"echo", "hello", ">" "file.txt"}
+{	// input = "echo "hello" > file.txt"  ->  {"echo", "hello", ">" "file.txt"}
 	char	**temp_toks;
-	int		tok_cnt;//토큰 갯수 저장
+	int		tok_cnt; //토큰 갯수 저장
 	t_cmd	*head_cmd;
 
 	if (*input == '\0')
-		return (NULL);//아무것도안쳤을때 sigfault 방지
+		return (NULL); //아무것도안쳤을때 sigfault 방지
 	tok_cnt = 0;
-	if (check_quote_num(input) != 0)// 따옴표 짝 맞는지 먼저 보고 틀리면 에러 리턴
+	if (check_quote_num(input) != 0) // 따옴표 짝 맞는지 먼저 보고 틀리면 에러 리턴
 		exit(1);//에러 따로 처리
-	temp_toks = tokenize_split(input, &tok_cnt, &(sh_list->pipe_cnt));//[tokenize_split.c] : 명령어 토큰으로 분해
+	temp_toks = tokenize_split(input, &tok_cnt, &(sh_list->pipe_cnt)); //[tokenize_split.c] : 명령어 토큰으로 분해
 	head_cmd = set_cmd_struct(temp_toks);
 	if (validate_syntax(head_cmd) == 1)
 		exit(1);//에러 따로 처리
@@ -127,6 +115,5 @@ t_cmd	*tokenize_input(char *input, t_sh *sh_list)
 	printf("-----\n");
 	free_tokens(temp_toks, tok_cnt);
 	return (head_cmd);
-//
 }
 

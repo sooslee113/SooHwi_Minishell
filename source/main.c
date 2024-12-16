@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/07 17:23:32 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/12/10 16:35:49 by sooslee          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../include/minishell.h"
 
 void	init_sh_list(t_sh *sh_list)
@@ -32,14 +20,13 @@ void print_adcmd_node(t_adcmd *node, int node_num)
     {
         for (int i = 0; node->argv[i]; i++)
         {
-            printf("  argv[%d]: '%s'\n", i, node->argv[i]);
+            printf("  argv[%d]: %s\n", i, node->argv[i]);
         }
     }
     else
     {
         printf("  No arguments\n");
     }
-
     // Print redirection information
     printf("\nRedirections:\n");
     if (node->redlist && node->redlist_count > 0)
@@ -79,8 +66,8 @@ void print_adcmd_node(t_adcmd *node, int node_num)
 
     // Print pipe information
     printf("\nPipe Status:\n");
-    printf("  pipe_fd[0]: %d\n", node->pipe_fd[0]);
-    printf("  pipe_fd[1]: %d\n", node->pipe_fd[1]);
+    // printf("  pipe_fd[0]: %d\n", node->pipe_fd[0]);
+    // printf("  pipe_fd[1]: %d\n", node->pipe_fd[1]);
     printf("  Process ID: %d\n", node->pid);
 }
 
@@ -94,20 +81,16 @@ void print_all_adcmd(t_sh *sh_list)
         printf("No command nodes found.\n");
         return;
     }
-
     printf("\n====== COMMAND STRUCTURE DUMP ======\n");
     printf("Total pipes: %d\n", sh_list->pipe_cnt);
-    
     current = sh_list->ad_cmd;
     node_count = 0;
-
     while (current)
     {
         print_adcmd_node(current, node_count);
         current = current->next;
         node_count++;
     }
-
     printf("\nTotal nodes: %d\n", node_count);
     printf("================================\n\n");
 }
@@ -139,19 +122,10 @@ int	main(int ac, char** av, char **envp)
         {
 			printf("cmd : %s / type : %d\n", curr_cmd->con, curr_cmd->type);
         }
-        // ad_cmd 내용 출력
-        // printf("Command arguments:\n");
-        // for (int i = 0; sh_list.ad_cmd->argv && sh_list.ad_cmd->argv[i]; i++) {
-        //     printf("argv[%d]: %s\n", i, sh_list.ad_cmd->argv[i]);
-        // }
-        // for (int i = 0; i < sh_list.ad_cmd->redlist_count; i++) 
-        // {
-        //     printf("Redirection Type: %d, File: %s\n",
-        //    sh_list.ad_cmd->redlist[i]->type,
-        //    sh_list.ad_cmd->redlist[i]->file_name);
-        // }
+        free_cmd(sh_list.head_cmd);
         print_all_adcmd(&sh_list);
-        //execute(&sh_list, envp);
+        execute(&sh_list, envp);
+        free_adcmd(sh_list.ad_cmd);
 		free(input);
 	}
 	printf("The End!\n");

@@ -1,28 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tokenize_split.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: donghwi2 <donghwi2@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/19 11:24:16 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/11/25 16:50:26 by donghwi2         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../include/minishell.h"
 
 // 동적 할당된 토큰 메모리 해제
-void	free_tokens(char** toks, int tok_count)
-{
-	int i = 0;
-	while (i < tok_count)
-	{
-		free(toks[i]);
-		i++;
-	}
-	free(toks);
-}
+
 
 // 현재 토큰을 tokens에 추가하는 함수
 void	add_token(t_tokenizer *tok)

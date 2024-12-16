@@ -6,7 +6,7 @@
 /*   By: sooslee <sooslee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 19:41:07 by donghwi2          #+#    #+#             */
-/*   Updated: 2024/12/10 16:01:35 by sooslee          ###   ########.fr       */
+/*   Updated: 2024/12/16 14:22:37 by sooslee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,5 +147,13 @@ void ft_echo(t_cmd *cmd);
 //t_adcmd *fill_in_pipe(t_cmd *cmd, t_adcmd *ad_cmd);
 void fill_in_adcmd(t_sh *sh_list, t_cmd *head_cmd);
 int    check_is_red(char *cmd);
+
+//execute
+
+//free
+void    free_adcmd(t_adcmd *adcmd);
+void	free_old_argv(char **argv);
+void	free_double(void **collection);
+void    free_cmd(t_cmd *cmd);
 
 #endif
