@@ -7,6 +7,7 @@ int count_redirections(t_cmd *head_cmd)
 
     count = 0;
     temp_cmd = head_cmd;
+
     while (temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0) 
     {
         if (temp_cmd->type == N_RED_OUT || temp_cmd->type == N_RED_OUT_AP ||
@@ -16,40 +17,64 @@ int count_redirections(t_cmd *head_cmd)
         }
         temp_cmd = temp_cmd->next;
     }
-    return (count);
+    return count;
 }
 
-int    making_argv(t_cmd *head_cmd)
+int making_argv_count(t_cmd *head_cmd)
 {
     int count;
     t_cmd *temp_cmd;
 
-    temp_cmd = head_cmd;
     count = 0;
-    while(temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0)
+    temp_cmd = head_cmd;
+
+    while (temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0)
     {
-        if (temp_cmd->type == N_WORD)
+        if (temp_cmd->type == N_WORD && temp_cmd->con)
         {
-            if (temp_cmd -> con)
-            count ++;
+            count++;
         }
-        temp_cmd = temp_cmd -> next;
+        temp_cmd = temp_cmd->next;
     }
-    return (count);
+    return count;
 }
 
-void	init_ad_cmd(t_adcmd *ad_cmd)
+void init_ad_cmd(t_adcmd *ad_cmd)
 {
-    ad_cmd->argv = NULL; // 명령어 인자 배열 초기화
-    ad_cmd->type = 0; // 타입 초기화 (0 또는 기본값으로 설정)
-    // ad_cmd->pipe_fd[0] = -1; // 파이프 초기화
-    //ad_cmd->pipe_fd = safe_malloc(2);
-    ad_cmd->pid = -1; // 프로세스 ID 초기화
-    ad_cmd->redlist = NULL; // 리다이렉션 리스트 초기화
-    ad_cmd->redlist_count = 0; // 리다이렉션 개수 초기화
-    ad_cmd->exit_code = 0; // 종료 코드 초기화
-    ad_cmd->next = NULL; // 다음 노드 초기화
-    ad_cmd->prev = NULL; // 이전 노드 초기화
+    ad_cmd->argv = NULL;
+    ad_cmd->type = 0;
+    ad_cmd->pid = -1;
+    ad_cmd->redlist = NULL;
+    ad_cmd->redlist_count = 0;
+    ad_cmd->exit_code = 0;
+    ad_cmd->next = NULL;
+    ad_cmd->prev = NULL;
+}
+
+static void allocate_redlist_memory(t_adcmd *ad_cmd, int redlist_count)
+{
+    ad_cmd->redlist = safe_malloc(sizeof(t_redlist *) * redlist_count);
+    ad_cmd->redlist_count = redlist_count;
+}
+
+static void process_redirection(t_adcmd *ad_cmd, t_cmd *temp_cmd, int *index)
+{
+    t_redlist *new_red;
+
+    new_red = safe_malloc(sizeof(t_redlist));
+    new_red->type = temp_cmd->type;
+
+    if (temp_cmd->next && temp_cmd->next->con)
+    {
+        new_red->file_name = ft_strdup(temp_cmd->next->con);
+    }
+    else
+    {
+        new_red->file_name = NULL;
+    }
+
+    ad_cmd->redlist[*index] = new_red;
+    (*index)++;
 }
 
 t_cmd *populate_redlist(t_adcmd *ad_cmd, t_cmd *head_cmd) 
@@ -59,135 +84,118 @@ t_cmd *populate_redlist(t_adcmd *ad_cmd, t_cmd *head_cmd)
     int i;
 
     redlist_count = count_redirections(head_cmd);
-    ad_cmd->redlist = safe_malloc(sizeof(t_redlist *) * redlist_count);
-    ad_cmd->redlist_count = redlist_count;
     temp_cmd = head_cmd;
     i = 0;
+    allocate_redlist_memory(ad_cmd, redlist_count);
     while (temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0) 
     {
-        if (temp_cmd->type == N_RED_OUT || temp_cmd->type == N_RED_OUT_AP ||
+        if (temp_cmd->type == N_RED_OUT || temp_cmd->type == N_RED_OUT_AP ||\
             temp_cmd->type == N_RED_IN || temp_cmd->type == N_RED_HRDC) 
         {
-            ad_cmd->redlist[i] = safe_malloc(sizeof(t_redlist));
-            ad_cmd->redlist[i]->type = temp_cmd->type;
-            // 다음 노드가 파일 이름인지 확인 후 복사
-            if (temp_cmd->next && temp_cmd->next->con) 
-            {
-                ad_cmd->redlist[i]->file_name = ft_strdup(temp_cmd->next->con);
-            } 
-            else 
-            {
-                ad_cmd->redlist[i]->file_name = NULL;
-            }
-            i++;
-            // 리다이렉션 토큰 및 파일 이름 건너뛰기
-            temp_cmd = temp_cmd->next;
+            process_redirection(ad_cmd, temp_cmd, &i);
+            temp_cmd = temp_cmd->next; // Skip the redirection file name
         }
         temp_cmd = temp_cmd->next;
     }
-    return temp_cmd; // 리다이렉션 처리 후의 명령어 위치 반환
+    return temp_cmd;
 }
 
-
-
-void real_making_argv(t_sh *sh_list, t_cmd *head_cmd) 
+void fill_in_argv(t_adcmd *ad_cmd, t_cmd *head_cmd)
 {
-    int one_dim;
+    int count;
     t_cmd *temp_cmd;
     int i;
-    t_adcmd *curr_adcmd;
 
+    count = making_argv_count(head_cmd);
     temp_cmd = head_cmd;
-    curr_adcmd = sh_list->ad_cmd;
-    while (curr_adcmd->next)  // 마지막 노드로 이동
-        curr_adcmd = curr_adcmd->next;
-
-    one_dim = making_argv(temp_cmd);
-    curr_adcmd->argv = safe_malloc(sizeof(char *) * (one_dim + 1));
     i = 0;
 
-    while (temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0 && i < one_dim) 
-    {
-        if (temp_cmd->type == N_WORD) 
-        {
-            curr_adcmd->argv[i] = ft_strdup(temp_cmd->con);
-            i++;
-        }
-        else if (temp_cmd->type == N_RED_OUT || temp_cmd->type == N_RED_OUT_AP ||
-                 temp_cmd->type == N_RED_IN || temp_cmd->type == N_RED_HRDC) 
-        {
-            temp_cmd = temp_cmd->next;
-            while (temp_cmd && temp_cmd->type != N_WORD) 
-                temp_cmd = temp_cmd->next;
+    ad_cmd->argv = safe_malloc(sizeof(char *) * (count + 1));
 
-            if (temp_cmd && temp_cmd->type == N_WORD) 
-            {
-                curr_adcmd->argv[i] = ft_strdup(temp_cmd->con);
-                i++;
-            }
+    while (temp_cmd && ft_strncmp(temp_cmd->con, "|", 1) != 0 && i < count)
+    {
+        if (temp_cmd->type == N_WORD)
+        {
+            ad_cmd->argv[i] = ft_strdup(temp_cmd->con);
+            i++;
         }
         temp_cmd = temp_cmd->next;
     }
-    curr_adcmd->argv[i] = NULL;
+    ad_cmd->argv[i] = NULL;
 }
-
 
 int is_in_redlist(t_adcmd *ad_cmd, char *arg)
 {
-    int k = 0;
+    int i;
 
-    while (k < ad_cmd->redlist_count)
+    i = 0;
+    while (i < ad_cmd->redlist_count)
     {
-        if (ad_cmd->redlist[k]->file_name &&
-            ft_strcmp(arg, ad_cmd->redlist[k]->file_name) == 0)
+        if (ad_cmd->redlist[i]->file_name &&
+            ft_strcmp(arg, ad_cmd->redlist[i]->file_name) == 0)
         {
-            return 1; // redlist에 존재함
+            return 1;
         }
-        k++;
+        i++;
     }
-    return 0; // redlist에 존재하지 않음
+    return 0;
 }
 
 char **create_new_argv(t_adcmd *ad_cmd)
 {
     int new_size;
-    int i; 
+    int i;
     int j;
     char **new_argv;
 
     new_size = 0;
     i = 0;
     j = 0;
-    // 기존 argv의 크기 측정
+
     while (ad_cmd->argv[new_size])
         new_size++;
 
-    new_argv = safe_malloc(sizeof(char *) * (new_size + 1)); // NULL 포함 크기
-    i = 0;
+    new_argv = safe_malloc(sizeof(char *) * (new_size + 1));
+
     while (ad_cmd->argv[i])
     {
-        if (!is_in_redlist(ad_cmd, ad_cmd->argv[i])) // redlist에 없으면 추가
+        if (!is_in_redlist(ad_cmd, ad_cmd->argv[i]))
         {
             new_argv[j] = ft_strdup(ad_cmd->argv[i]);
             j++;
         }
         i++;
     }
-    new_argv[j] = NULL; // NULL로 종료
+    new_argv[j] = NULL;
     return new_argv;
 }
 
 void remove_file_name_from_argv(t_adcmd *ad_cmd)
 {
+    char **new_argv;
+
     if (!ad_cmd || !ad_cmd->argv || !ad_cmd->redlist)
         return;
 
-    char **new_argv;
     new_argv = create_new_argv(ad_cmd);
     free_old_argv(ad_cmd->argv);
     ad_cmd->argv = new_argv;
 }
 
+static t_adcmd *create_new_adcmd(t_adcmd **prev_adcmd)
+{
+    t_adcmd *new_adcmd;
+
+    new_adcmd = safe_malloc(sizeof(t_adcmd));
+    init_ad_cmd(new_adcmd);
+    if (*prev_adcmd)
+    {
+        (*prev_adcmd)->next = new_adcmd;
+        new_adcmd->prev = *prev_adcmd;
+    }
+    *prev_adcmd = new_adcmd;
+    return new_adcmd;
+}
 
 void fill_in_adcmd(t_sh *sh_list, t_cmd *head_cmd)
 {
@@ -195,43 +203,22 @@ void fill_in_adcmd(t_sh *sh_list, t_cmd *head_cmd)
     t_adcmd *curr_adcmd;
     t_adcmd *prev_adcmd;
 
-    if (!sh_list || !head_cmd)
-        return;
-
-    // 첫 번째 노드 생성
-    sh_list->ad_cmd = safe_malloc(sizeof(t_adcmd));
-    init_ad_cmd(sh_list->ad_cmd);
-    curr_adcmd = sh_list->ad_cmd;
-    prev_adcmd = NULL;
     curr_cmd = head_cmd;
+    prev_adcmd = NULL;
+    curr_adcmd = create_new_adcmd(&prev_adcmd);
+    sh_list->ad_cmd = curr_adcmd;
 
     while (curr_cmd)
     {
-        // 현재 명령어 블록 처리
-        real_making_argv(sh_list, curr_cmd);
+        fill_in_argv(curr_adcmd, curr_cmd);
         curr_cmd = populate_redlist(curr_adcmd, curr_cmd);
         remove_file_name_from_argv(curr_adcmd);
-        // 파이프를 만나면 새로운 노드 생성
+
         if (curr_cmd && ft_strncmp(curr_cmd->con, "|", 1) == 0)
         {
-            // 파이프 카운트 증가
             sh_list->pipe_cnt++;
-            // 다음 노드 생성
-            curr_adcmd->next = safe_malloc(sizeof(t_adcmd));
-            prev_adcmd = curr_adcmd;
-            curr_adcmd = curr_adcmd->next;
-            init_ad_cmd(curr_adcmd);
-            curr_adcmd->prev = prev_adcmd;
-            // 파이프 다음 명령어로 이동
-            if (curr_cmd->next)
-                curr_cmd = curr_cmd->next;
-            else
-                break;
-        }
-        else
-        {
-            break; // 더 이상 처리할 명령어가 없음
+            curr_cmd = curr_cmd->next;
+            curr_adcmd = create_new_adcmd(&prev_adcmd);
         }
     }
 }
-
